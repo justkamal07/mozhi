@@ -1,6 +1,6 @@
 [package]
 name = "mozhi"
-version = "0.2.0"
+version = "0.3.0"
 description = "Mozhi · மொழி — open-source, on-device Tamil voice typing"
 authors = ["Mozhi contributors"]
 license = "Apache-2.0"
@@ -28,7 +28,7 @@ parking_lot = "0.12"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "fs", "io-util"] }
 
 # ── engine (src/engine): audio capture, whisper.cpp, models, transliteration, polish ──
-whisper-rs = { version = "0.16", features = ["log_backend"] }
+whisper-rs = { version = "0.16", features = ["log_backend", "raw-api"] }
 cpal = "0.16"
 rtrb = "0.3"
 reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls", "json"] }

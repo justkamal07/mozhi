@@ -31,6 +31,7 @@ export interface Settings {
   autoPaste: boolean;
   restoreClipboard: boolean;
   livePreview: boolean;
+  voiceEmoji: boolean;
   polish: PolishConfig;
   micDevice: string | null;
   sounds: boolean;
@@ -80,10 +81,18 @@ export interface Permissions {
   accessibility: PermState;
 }
 
+export type ErrorAction = "retry" | "copy" | "openMicSettings" | "openAccessibility" | "openModels" | "report";
+
 export interface StatePayload {
   phase: Phase;
   message: string | null;
   mode: OutputMode;
+  actions?: ErrorAction[];
+}
+
+export interface SegmentPayload {
+  text: string;
+  last: boolean;
 }
 
 export interface TargetPayload {
@@ -140,9 +149,14 @@ export const api = {
   toggleDictation: () => invoke<void>("toggle_dictation"),
   commitDictation: () => invoke<void>("commit_dictation"),
   cancelDictation: () => invoke<void>("cancel_dictation"),
-  editDictation: () => invoke<void>("edit_dictation"),
-  updateDraft: (text: string) => invoke<void>("update_draft", { text }),
+  /** Click into the transcript while listening: edit and keep listening (`false` = focus left). */
+  editDictation: (on = true) => invoke<void>("edit_dictation", { on }),
+  updateDraft: (text: string, caret?: number, byUser = true) => invoke<void>("update_draft", { text, caret, byUser }),
+  finalDraft: (text: string) => invoke<void>("final_draft", { text }),
   insertDraft: (text: string) => invoke<void>("insert_draft", { text }),
+  retryDictation: () => invoke<void>("retry_dictation"),
+  copyDictation: () => invoke<void>("copy_dictation"),
+  reportIssue: () => invoke<void>("report_issue"),
   openHistory: () => invoke<void>("open_history"),
   setOutputMode: (mode: OutputMode) => invoke<void>("set_output_mode", { mode }),
   overlayResize: (width: number, height: number) => invoke<void>("overlay_resize", { width, height }),
@@ -163,6 +177,7 @@ export const events = {
   onState: (cb: (p: StatePayload) => void) => on("mozhi:state", cb),
   onLevel: (cb: (level: number) => void) => on("mozhi:level", cb),
   onPartial: (cb: (text: string) => void) => on("mozhi:partial", cb),
+  onSegment: (cb: (p: SegmentPayload) => void) => on("mozhi:segment", cb),
   onTarget: (cb: (p: TargetPayload) => void) => on("mozhi:target", cb),
   onFinal: (cb: (text: string) => void) => on("mozhi:final", cb),
   onSettings: (cb: (s: Settings) => void) => on("mozhi:settings", cb),

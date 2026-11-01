@@ -82,8 +82,11 @@ pub struct Settings {
     pub auto_paste: bool,
     /// Put the user's previous clipboard back after pasting.
     pub restore_clipboard: bool,
-    /// Show a rolling transcript while speaking (uses extra CPU/GPU).
+    /// Show a rolling transcript while speaking (uses extra CPU/GPU). Also what lets the
+    /// user edit while still speaking: phrases are committed into the draft at each pause.
     pub live_preview: bool,
+    /// "heart emoji" / "இதயம் எமோஜி" → ❤️.
+    pub voice_emoji: bool,
     pub polish: PolishConfig,
     /// Input device name; None = system default.
     pub mic_device: Option<String>,
@@ -108,6 +111,7 @@ impl Default for Settings {
             auto_paste: true,
             restore_clipboard: true,
             live_preview: true,
+            voice_emoji: true,
             polish: PolishConfig::default(),
             mic_device: None,
             sounds: true,
@@ -231,6 +235,21 @@ pub enum Phase {
     Error,
 }
 
+/// What the user can do about a problem, shown as buttons in the overlay.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum ErrorAction {
+    /// Transcribe the kept audio again (nothing said is lost).
+    Retry,
+    /// Copy what was transcribed so far.
+    Copy,
+    OpenMicSettings,
+    OpenAccessibility,
+    OpenModels,
+    /// Open a prefilled GitHub issue (the user reviews it before anything is sent).
+    Report,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct StatePayload {
@@ -238,6 +257,17 @@ pub struct StatePayload {
     /// Human-readable detail for Done/Error ("Pasted into Slack", "Microphone blocked").
     pub message: Option<String>,
     pub mode: OutputMode,
+    #[serde(default)]
+    pub actions: Vec<ErrorAction>,
+}
+
+/// A phrase committed at a pause while listening (`last` = the tail after ⌃⌃ / ↵). The overlay
+/// splices it into the draft at the user's caret, so they can edit while still speaking.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct SegmentPayload {
+    pub text: String,
+    pub last: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]

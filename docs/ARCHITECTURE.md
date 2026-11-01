@@ -21,18 +21,36 @@ optional clean-up pass uses a **local LLM through Ollama**. Nothing leaves the m
 1. **⌃⌃** (double-tap Control; Ctrl on Windows): `platform` reports `KeyEvent::DoubleTap`.
 2. `controller` captures the **frontmost app** (always shown in the overlay) and the **focused field**
    (shown when available), shows the overlay *without* taking focus, and starts `engine`.
-3. While listening, `engine` streams `level` (drives the three dots) and `partial` text; the
-   controller polls the frontmost app every 250 ms so the overlay follows the user if they switch apps.
-   Enter and Escape are **captured** (swallowed) by the key hook only during this phase.
-4. **⌃⌃ or ↵** commits: final whisper pass → optional LLM polish (timeout → raw text) → paste into
-   the app the user is in *now* → restore the clipboard → history.
-5. **Esc** cancels and discards the audio.
-6. **Click the transcript** (or turn on *Pause to edit before inserting*) to stop listening and edit
-   the final text in the overlay. The panel takes keyboard focus (`platform::focus_overlay`; on macOS
-   a non-activating panel becoming key, so the user's app stays frontmost). **↵** hands focus back
-   (`platform::unfocus_overlay`) and pastes into the app captured at ⌃⌃; **⇧↵** is a new line.
-7. The **clipboard button** saves the transcript to History and the clipboard without pasting, and
-   opens History, where **Copy all** copies every dictation.
+3. While listening, `engine` streams `level` (drives the voice indicator) and `partial` text — the
+   words still being heard. At every pause (≥650 ms after ≥1 s of speech) it closes a **phrase**,
+   transcribes it at final quality and emits `segment`; the overlay splices it into the draft at the
+   user's caret (`src/shared/splice.ts`, mirrored by `src-tauri/src/draft.rs`). The controller polls
+   the frontmost app every 250 ms so the overlay follows the user if they switch apps. Enter and
+   Escape are **captured** (swallowed) by the key hook only during this phase.
+4. **Live editing.** Clicking the text gives the overlay keyboard focus (`platform::focus_overlay`; on
+   macOS a non-activating panel becoming key, so the user's app stays frontmost) **while it keeps
+   listening**. The user moves between words, fixes them and adds emoji; new phrases land at the
+   caret. Key capture is released so the overlay handles ↵ (insert), ⇧↵ (new line) and esc itself.
+   Clicking back into their app ends live editing; dictation carries on.
+5. **⌃⌃ or ↵** commits: the engine transcribes the tail since the last phrase → the overlay splices it
+   and returns the full draft (`final_draft`; after 1.2 s the controller uses its own mirror) →
+   optional LLM polish (skipped if the user edited, so it never rewrites their changes) → paste into
+   the app the user is in → restore the clipboard → history.
+6. **Esc** cancels and discards the audio.
+7. **Emoji**: the 😊 button opens a picker (everyday row, recents, all of Unicode ≤ 14, search in
+   English, Tamil and Tanglish). Saying *"heart emoji"* or *"இதயம் எமோஜி"* inserts ❤️. Both use
+   `src/shared/emoji-words.json`.
+8. **Errors keep the words.** The engine keeps the last session's audio; a failed transcription
+   offers **Try again** (re-transcribes it, then shows it for review), **Copy text**, the fix that
+   matches the cause (microphone or Accessibility settings, Models) and **Report**, which opens a
+   prefilled GitHub issue (version, OS, model, error, log tail — never dictated text) for the user
+   to review and send.
+9. *Pause to edit before inserting* (setting) stops in the overlay with the final text editable.
+10. The **clipboard button** saves the transcript to History and the clipboard without pasting.
+
+**Self-test.** `mozhi --selftest speech.wav --selftest-out result.json --selftest-exit` runs one real
+dictation with the WAV in place of the microphone (phrases, overlay, paste into the frontmost app,
+History) and writes the outcome as JSON.
 
 ## Modules and ownership
 
@@ -51,9 +69,10 @@ optional clean-up pass uses a **local LLM through Ollama**. Nothing leaves the m
 
 | Event | Payload |
 | --- | --- |
-| `mozhi:state` | `{ phase, message, mode }` — idle · starting · listening · transcribing · inserting · done · error |
+| `mozhi:state` | `{ phase, message, mode, actions }` — idle · starting · listening · transcribing · editing · inserting · done · error; `actions` are the fixes offered |
 | `mozhi:level` | `number` 0–1, ~30 Hz, overlay only |
-| `mozhi:partial` | `string` rolling transcript, overlay only |
+| `mozhi:partial` | `string` words still being heard (since the last phrase), overlay only |
+| `mozhi:segment` | `{ text, last }` a committed phrase to splice at the caret, overlay only |
 | `mozhi:target` | `{ app: FrontApp \| null, element: FocusedElement \| null }` |
 | `mozhi:final` | `string` |
 | `mozhi:settings` · `mozhi:history` · `mozhi:navigate` · `mozhi:download` | see `ipc.ts` |

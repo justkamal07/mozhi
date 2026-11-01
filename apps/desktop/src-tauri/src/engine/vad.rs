@@ -52,8 +52,13 @@ impl Vad {
     }
 
     pub fn speech(&mut self, audio: &[f32]) -> Option<SpeechMap> {
+        self.intervals(audio).map(|raw| merge(&raw, audio.len()))
+    }
+
+    /// Unpadded speech intervals as sample ranges.
+    pub fn intervals(&mut self, audio: &[f32]) -> Option<Vec<(usize, usize)>> {
         if audio.len() < SAMPLE_RATE / 4 {
-            return Some(SpeechMap { segments: Vec::new(), voiced_ms: 0 });
+            return Some(Vec::new());
         }
         let mut params = WhisperVadParams::new();
         params.set_threshold(0.5);
@@ -72,7 +77,7 @@ impl Vad {
                 }
             }
         }
-        Some(merge(&raw, audio.len()))
+        Some(raw)
     }
 }
 
@@ -96,7 +101,7 @@ pub fn splice(audio: &[f32], map: &SpeechMap) -> Vec<f32> {
     for (i, &(a, b)) in map.segments.iter().enumerate() {
         if i > 0 {
             let gap = a.saturating_sub(map.segments[i - 1].1).min(MAX_GAP);
-            out.extend(std::iter::repeat(0.0).take(gap));
+            out.resize(out.len() + gap, 0.0);
         }
         out.extend_from_slice(&audio[a..b]);
     }

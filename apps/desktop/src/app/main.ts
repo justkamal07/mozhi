@@ -315,6 +315,7 @@ function writingPage() {
       row("writing.livePreview", toggle(s.livePreview, (v) => save({ livePreview: v }), t("writing.livePreview"))),
       row("writing.autoPaste", toggle(s.autoPaste, (v) => save({ autoPaste: v }), t("writing.autoPaste"))),
       row("writing.restore", toggle(s.restoreClipboard, (v) => save({ restoreClipboard: v }), t("writing.restore"))),
+      row("writing.voiceEmoji", toggle(s.voiceEmoji, (v) => save({ voiceEmoji: v }), t("writing.voiceEmoji")), t("writing.voiceEmojiHint")),
       row("writing.sounds", toggle(s.sounds, (v) => save({ sounds: v }), t("writing.sounds"))),
       row("writing.history", toggle(s.historyEnabled, (v) => save({ historyEnabled: v }), t("writing.history"))),
     ),
@@ -467,6 +468,7 @@ function aboutPage() {
       { class: "card", style: "margin-top:28px" },
       row("about.open" as Key, h("a", { class: "btn small", href: REPO_URL, target: "_blank", rel: "noreferrer" }, "GitHub ↗")),
       h("div", { class: "row" }, h("div", { class: "label" }, t("about.private"))),
+      row("about.report", h("button", { class: "btn small", onclick: () => api.reportIssue() }, `${t("about.report")} ↗`), t("about.reportHint")),
       store.info ? h("div", { class: "row" }, h("div", { class: "label mono" }, `Mozhi ${store.info.version} · ${store.info.os}/${store.info.arch}`)) : null,
     ),
   ];

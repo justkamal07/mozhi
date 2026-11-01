@@ -83,7 +83,8 @@ jobs:
           tagName: ${{ inputs.tag || github.ref_name }}
           releaseName: "Mozhi ${{ inputs.tag || github.ref_name }}"
           releaseDraft: false
-          prerelease: true
+          # v1.2.3 is a full release (served by /releases/latest); v1.2.3-beta.1 is a pre-release.
+          prerelease: ${{ contains(inputs.tag || github.ref_name, '-') }}
           releaseBody: |
             ## Mozhi · மொழி beta
 
@@ -104,3 +105,34 @@ jobs:
             Mozhi downloads a speech model the first time (about 265 MB for the recommended Tamil model). After that everything runs offline.
 
             Found a problem? [Report it here](https://github.com/Kamal007OLica/mozhi/issues/new/choose).
+
+  # Stable file names so the website can link straight to the newest installer:
+  #   https://github.com/Kamal007OLica/mozhi/releases/latest/download/Mozhi-macOS-AppleSilicon.dmg
+  #   https://github.com/Kamal007OLica/mozhi/releases/latest/download/Mozhi-Windows-x64-setup.exe
+  # Also replaces the generic body with docs/releases/<tag>.md when that file exists.
+  finalize:
+    name: Stable download names and notes
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - name: Attach stable-named copies
+        run: |
+          set -euo pipefail
+          mkdir -p dl stable
+          gh release download "$TAG" --dir dl --pattern '*.dmg' --pattern '*-setup.exe' --pattern '*.msi'
+          cp dl/*_aarch64.dmg stable/Mozhi-macOS-AppleSilicon.dmg
+          cp dl/*_x64-setup.exe stable/Mozhi-Windows-x64-setup.exe
+          cp dl/*_x64_en-US.msi stable/Mozhi-Windows-x64.msi
+          gh release upload "$TAG" stable/* --clobber
+      - name: Release notes
+        run: |
+          if [ -f "docs/releases/$TAG.md" ]; then
+            gh release edit "$TAG" --notes-file "docs/releases/$TAG.md"
+          fi
+

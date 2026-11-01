@@ -496,3 +496,226 @@ button:disabled {
     animation: none !important;
   }
 }
+
+/* ── v3: the live line — words still being heard, before they're committed ── */
+.live {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: -2px 26px 8px;
+  font-family: var(--mz-font-display);
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(249, 220, 124, 0.78);
+}
+.live[hidden] {
+  display: none;
+}
+.live-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: rtl; /* keep the newest words visible when the line overflows */
+  text-align: left;
+}
+.live-text::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -0.12em;
+  background: var(--mz-manjal);
+  animation: live-caret 1s steps(2) infinite;
+}
+.live-where {
+  display: none;
+  flex: none;
+  font-family: var(--mz-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.live.at-caret .live-where {
+  display: inline;
+}
+@keyframes live-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Live editing: the text box lights up like review mode, but the voice keeps moving. */
+.card[data-phase="listening"] .transcript:focus,
+.card[data-phase="starting"] .transcript:focus {
+  background: rgba(0, 0, 0, 0.28);
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 196, 48, 0.45),
+    0 0 0 4px rgba(244, 196, 48, 0.08);
+}
+.card[data-phase="listening"] .transcript:focus ~ .foot .status {
+  color: var(--mz-manjal);
+}
+
+/* ── v3: fixes offered for an error ── */
+.fixes {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 2px 16px 10px;
+}
+.fixes[hidden] {
+  display: none;
+}
+.fix {
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid rgba(247, 240, 227, 0.22);
+  border-radius: var(--mz-r-pill);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink);
+  font-family: var(--mz-font-display);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--mz-dur-fast) var(--mz-ease-out), transform var(--mz-dur-fast) var(--mz-ease-out);
+}
+.fix:hover {
+  background: rgba(255, 255, 255, 0.11);
+}
+.fix:active {
+  transform: translateY(1px);
+}
+.fix.primary {
+  border-color: transparent;
+  background: var(--mz-manjal);
+  color: var(--mz-mai);
+  box-shadow: 2px 2px 0 var(--mz-kumkum);
+}
+
+/* ── v3: emoji ── */
+.emoji-btn[aria-expanded="true"] {
+  background: rgba(244, 196, 48, 0.2);
+  color: var(--mz-manjal);
+}
+.emoji-btn[hidden] {
+  display: none;
+}
+.emoji-panel {
+  position: relative;
+  z-index: 3;
+  margin: 2px 12px 6px;
+  padding: 8px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: emoji-in 220ms var(--mz-ease-out) both;
+}
+.emoji-panel[hidden] {
+  display: none;
+}
+@keyframes emoji-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.emoji-quick {
+  display: flex;
+  gap: 2px;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(247, 240, 227, 0.12);
+}
+.emoji-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.emoji-search {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--mz-r-pill);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--ink);
+  font-family: var(--mz-font-display);
+  font-size: 13.5px;
+  outline: none;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.emoji-search:focus {
+  box-shadow: inset 0 0 0 1px rgba(244, 196, 48, 0.5);
+}
+.emoji-search::placeholder {
+  color: var(--muted);
+}
+.emoji-tabs {
+  display: flex;
+  gap: 1px;
+}
+.emoji-tab {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  filter: saturate(0.6);
+}
+.emoji-tab:hover,
+.emoji-tab[aria-selected="true"] {
+  opacity: 1;
+  filter: none;
+  background: rgba(244, 196, 48, 0.16);
+}
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+  max-height: 148px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(247, 240, 227, 0.2) transparent;
+}
+.emoji-label,
+.emoji-empty {
+  grid-column: 1 / -1;
+  padding: 4px 4px 2px;
+  font-family: var(--mz-font-display);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.emoji {
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform var(--mz-dur-fast) var(--mz-ease-spring), background var(--mz-dur-fast);
+}
+.emoji:hover {
+  background: rgba(255, 255, 255, 0.09);
+  transform: scale(1.18);
+}
+.emoji:active {
+  transform: scale(0.94);
+}
+.emoji-quick .emoji {
+  flex: 1;
+}

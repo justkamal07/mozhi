@@ -95,6 +95,41 @@ impl Recorder {
         Ok(Self { stop, done: Some(done_rx), audio, dropped, error })
     }
 
+    /// Like `start`, but the audio comes from `samples` (any rate, mono), fed in real time
+    /// in 20 ms chunks with levels as usual, then silence until stopped. For self-tests.
+    pub fn from_samples(samples: Vec<f32>, sample_rate: u32, sink: Arc<dyn EngineSink>) -> anyhow::Result<Self> {
+        let stop = Arc::new(AtomicBool::new(false));
+        let audio = Arc::new(RwLock::new(Vec::with_capacity(SAMPLE_RATE * 60)));
+        let (done_tx, done_rx) = mpsc::sync_channel::<()>(1);
+        let mut pcm = Vec::with_capacity(samples.len() * SAMPLE_RATE / sample_rate.max(1) as usize + 64);
+        let mut r = Resampler::new(sample_rate, SAMPLE_RATE as u32);
+        r.process(&samples, &mut pcm);
+        r.flush(&mut pcm);
+        let (stop_t, audio_t) = (stop.clone(), audio.clone());
+        thread::Builder::new()
+            .name("mozhi-feed".into())
+            .spawn(move || {
+                const CHUNK: usize = SAMPLE_RATE / 50;
+                let mut meter = LevelMeter::new();
+                let silence = [0.00002f32; CHUNK];
+                let started = std::time::Instant::now();
+                let mut fed = 0usize;
+                while !stop_t.load(Ordering::Acquire) {
+                    let chunk = pcm.get(fed..(fed + CHUNK).min(pcm.len())).filter(|c| !c.is_empty()).unwrap_or(&silence);
+                    meter.push(chunk, |l| sink.level(l));
+                    audio_t.write().extend_from_slice(chunk);
+                    fed += CHUNK;
+                    // Real time: never run ahead of the wall clock.
+                    let due = started + Duration::from_millis((fed / (SAMPLE_RATE / 1000)) as u64);
+                    thread::sleep(due.saturating_duration_since(std::time::Instant::now()));
+                }
+                sink.level(0.0);
+                let _ = done_tx.try_send(());
+            })
+            .context("spawn sample feeder")?;
+        Ok(Self { stop, done: Some(done_rx), audio, dropped: Arc::new(AtomicU64::new(0)), error: Arc::new(Mutex::new(None)) })
+    }
+
     /// The growing 16 kHz mono buffer, for the live preview.
     pub fn shared(&self) -> Arc<RwLock<Vec<f32>>> {
         self.audio.clone()

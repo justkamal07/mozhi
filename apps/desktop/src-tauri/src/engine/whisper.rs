@@ -5,6 +5,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Once};
 
 use anyhow::anyhow;
+use parking_lot::Mutex;
 use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters, WhisperState};
 
 use super::clean;
@@ -22,6 +23,10 @@ pub struct Model {
     pub id: String,
     pub kind: ModelKind,
     ctx: WhisperContext,
+    /// One inference at a time. Preview, segment, language-ID, final and warm-up passes all
+    /// share the GPU; overlapping encodes on Metal fail with "whisper_full_with_state:
+    /// failed to encode".
+    gpu: Mutex<()>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -67,7 +72,12 @@ pub fn threads() -> i32 {
 
 impl Model {
     pub fn load(id: &str, path: &Path, kind: ModelKind) -> anyhow::Result<Self> {
-        LOGGING.call_once(whisper_rs::install_logging_hooks);
+        LOGGING.call_once(|| {
+            whisper_rs::install_logging_hooks();
+            // Replace whisper.cpp's own logger (ggml keeps whisper-rs's) to keep deliberate
+            // aborts from showing up as errors.
+            unsafe { whisper_rs::whisper_rs_sys::whisper_log_set(Some(whisper_log), std::ptr::null_mut()) };
+        });
         if !path.exists() {
             return Err(anyhow!("speech model {id} is not downloaded"));
         }
@@ -75,13 +85,15 @@ impl Model {
         params.use_gpu(cfg!(target_os = "macos"));
         params.flash_attn(true);
         let ctx = WhisperContext::new_with_params(path, params).map_err(|e| anyhow!("speech model {id} failed to load: {e:?}"))?;
-        Ok(Self { id: id.to_string(), kind, ctx })
+        Ok(Self { id: id.to_string(), kind, ctx, gpu: Mutex::new(()) })
     }
 
     /// Every decode gets a fresh state. Reusing a whisper.cpp state across calls with a
     /// different `audio_ctx` corrupts later results (measured: Tamil CER 13% → 48% after a
     /// few clips), and allocating one costs only tens of milliseconds.
+    /// Also takes the GPU lock for the whole call.
     fn with_state<R>(&self, f: impl FnOnce(&mut WhisperState) -> anyhow::Result<R>) -> anyhow::Result<R> {
+        let _gpu = self.gpu.lock();
         let mut state = self.ctx.create_state().map_err(|e| anyhow!("speech model state: {e:?}"))?;
         f(&mut state)
     }
@@ -128,7 +140,15 @@ impl Model {
 
         // Plain greedy decoding. whisper.cpp's temperature fallback re-decodes up to five times
         // and fired on clean speech in testing (≈4× slower, no accuracy gain on Tamil FLEURS).
-        let text = self.run(self.params(audio, lang, &prompt, opts, 0.0, 1), audio, opts)?;
+        let text = match self.run(self.params(audio, lang, &prompt, opts, 0.0, 1), audio, opts) {
+            Ok(t) => t,
+            Err(e) if is_aborted(&e) || opts.quality == Quality::Preview => return Err(e),
+            Err(e) => {
+                // A final or segment pass must not be lost to a transient GPU failure.
+                log::warn!("{e:#}; retrying once");
+                self.run(self.params(audio, lang, &prompt, opts, 0.0, 1), audio, opts)?
+            }
+        };
         if opts.quality == Quality::Final && clean::has_loop(&text) {
             // Greedy got stuck repeating itself. One retry with a little sampling almost
             // always escapes the loop, and only costs time when it happens.
@@ -196,10 +216,14 @@ impl Model {
     fn run(&self, p: FullParams, audio: &[f32], opts: &Decode) -> anyhow::Result<String> {
         let aborted = || opts.abort.as_ref().map(|f| f.load(Ordering::Relaxed)).unwrap_or(false);
         self.with_state(|state| {
-            state.full(p, audio).map_err(|e| anyhow!("whisper inference failed: {e:?}"))?;
+            ABORT_FLAG.with(|f| f.set(opts.abort.as_ref().map(Arc::as_ptr)));
+            let r = state.full(p, audio);
+            ABORT_FLAG.with(|f| f.set(None));
+            // An aborted pass reports a generic failure; say what really happened.
             if aborted() {
-                return Err(anyhow!("aborted"));
+                return Err(anyhow!(ABORTED));
             }
+            r.map_err(|e| anyhow!("whisper inference failed: {e:?}"))?;
             let mut text = String::new();
             for seg in state.as_iter() {
                 if seg.no_speech_probability() > 0.85 && seg.n_tokens() < 4 {
@@ -238,6 +262,42 @@ impl Model {
         let label = if opts.lang == Lang::Auto { script_language(&out) } else { lang };
         Ok((out, label))
     }
+}
+
+const ABORTED: &str = "aborted";
+
+thread_local! {
+    /// The abort flag of the pass running on this thread, for `whisper_log`.
+    static ABORT_FLAG: std::cell::Cell<Option<*const AtomicBool>> = const { std::cell::Cell::new(None) };
+}
+
+/// whisper.cpp → `log`. whisper.cpp reports a pass we aborted on purpose as
+/// "failed to encode" / "failed to decode" at error level; those become debug lines.
+unsafe extern "C" fn whisper_log(level: whisper_rs::whisper_rs_sys::ggml_log_level, text: *const std::ffi::c_char, _: *mut std::ffi::c_void) {
+    use whisper_rs::whisper_rs_sys as sys;
+    if text.is_null() {
+        return;
+    }
+    let msg = std::ffi::CStr::from_ptr(text).to_string_lossy();
+    let msg = msg.trim_end();
+    if msg.is_empty() {
+        return;
+    }
+    let deliberate = (msg.contains("failed to encode") || msg.contains("failed to decode"))
+        && ABORT_FLAG.with(|f| f.get()).is_some_and(|p| !p.is_null() && (*p).load(Ordering::Relaxed));
+    let lvl = match level {
+        _ if deliberate => log::Level::Debug,
+        sys::ggml_log_level_GGML_LOG_LEVEL_ERROR => log::Level::Error,
+        sys::ggml_log_level_GGML_LOG_LEVEL_WARN => log::Level::Warn,
+        sys::ggml_log_level_GGML_LOG_LEVEL_INFO => log::Level::Info,
+        _ => log::Level::Debug,
+    };
+    log::log!(target: "whisper_rs::whisper", lvl, "{msg}");
+}
+
+/// The pass was cancelled on purpose (a preview overtaken by newer audio or by finish()).
+pub fn is_aborted(e: &anyhow::Error) -> bool {
+    e.to_string() == ABORTED
 }
 
 unsafe extern "C" fn abort_when_set(flag: *mut std::ffi::c_void) -> bool {

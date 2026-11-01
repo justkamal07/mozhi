@@ -1,7 +1,7 @@
 {
   "name": "@mozhi/desktop",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.0",
-    "@tauri-apps/plugin-autostart": "^2"
+    "@tauri-apps/plugin-autostart": "^2",
+    "unicode-emoji-json": "0.9.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.12.0",

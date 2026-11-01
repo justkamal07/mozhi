@@ -137,19 +137,57 @@ pub fn cancel_dictation(ctrl: Ctrl) {
     ctrl.inner().cancel();
 }
 
+/// Click into the transcript while listening: edit it and keep listening (`on: false` when
+/// the overlay loses focus again).
 #[tauri::command]
-pub fn edit_dictation(ctrl: Ctrl) {
-    ctrl.inner().edit();
+pub fn edit_dictation(ctrl: Ctrl, on: Option<bool>) {
+    ctrl.inner().set_live_edit(on.unwrap_or(true));
 }
 
 #[tauri::command]
-pub fn update_draft(ctrl: Ctrl, text: String) {
-    ctrl.update_draft(text);
+pub fn update_draft(ctrl: Ctrl, text: String, caret: Option<usize>, by_user: Option<bool>) {
+    ctrl.update_draft(text, caret, by_user.unwrap_or(true));
+}
+
+/// The overlay's complete draft once the last phrase is spliced in.
+#[tauri::command]
+pub fn final_draft(ctrl: Ctrl, text: String) {
+    ctrl.final_draft(text);
 }
 
 #[tauri::command]
 pub fn insert_draft(ctrl: Ctrl, text: String) {
     ctrl.inner().insert_edited(text);
+}
+
+#[tauri::command]
+pub fn retry_dictation(ctrl: Ctrl) {
+    ctrl.inner().retry();
+}
+
+#[tauri::command]
+pub fn copy_dictation(ctrl: Ctrl) {
+    ctrl.inner().copy_current();
+}
+
+/// Opens a prefilled GitHub issue in the browser; nothing is sent until the user submits it.
+#[tauri::command]
+pub fn report_issue(ctrl: Ctrl) -> CmdResult<()> {
+    open_url(&ctrl.report_url()).map_err(err)
+}
+
+pub fn open_url(url: &str) -> std::io::Result<()> {
+    #[cfg(target_os = "macos")]
+    let mut cmd = std::process::Command::new("open");
+    #[cfg(windows)]
+    let mut cmd = {
+        let mut c = std::process::Command::new("rundll32");
+        c.arg("url.dll,FileProtocolHandler");
+        c
+    };
+    #[cfg(not(any(target_os = "macos", windows)))]
+    let mut cmd = std::process::Command::new("xdg-open");
+    cmd.arg(url).spawn().map(|_| ())
 }
 
 #[tauri::command]

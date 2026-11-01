@@ -79,7 +79,7 @@ impl engine::EngineSink for Printer {
 /// Live microphone run through the real start → preview → finish path.
 fn record(engine: &engine::Engine, id: &str, mode: OutputMode, secs: f32) -> anyhow::Result<()> {
     let sink = std::sync::Arc::new(Printer { levels: Default::default(), peak: Default::default() });
-    let opts = engine::RecordOptions { device: None, model_id: id.into(), mode, live_preview: true };
+    let opts = engine::RecordOptions { device: None, model_id: id.into(), mode, live_preview: true, voice_emoji: false };
     let t = Instant::now();
     engine.start(opts, sink.clone())?;
     println!("start() returned in {:.1} ms — speak for {secs}s", t.elapsed().as_secs_f32() * 1000.0);

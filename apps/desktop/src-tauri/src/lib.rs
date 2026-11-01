@@ -11,8 +11,10 @@
 
 mod commands;
 mod controller;
+mod draft;
 mod engine;
 mod platform;
+mod selftest;
 mod store;
 mod tray;
 mod types;
@@ -90,6 +92,9 @@ pub fn run() {
 
             tray::create(&handle)?;
             preload_model(&ctrl);
+            if let Some(args) = selftest::parse_args() {
+                selftest::spawn(ctrl.clone(), args);
+            }
 
             // Silero VAD (0.9 MB) cuts hallucinated text from silence. New model downloads fetch
             // it too; this covers installs that already had a model before VAD shipped.
@@ -131,7 +136,11 @@ pub fn run() {
             commands::cancel_dictation,
             commands::edit_dictation,
             commands::update_draft,
+            commands::final_draft,
             commands::insert_draft,
+            commands::retry_dictation,
+            commands::copy_dictation,
+            commands::report_issue,
             commands::open_history,
             commands::set_output_mode,
             commands::overlay_resize,
