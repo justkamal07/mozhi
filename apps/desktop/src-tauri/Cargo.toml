@@ -1,6 +1,6 @@
 [package]
 name = "mozhi"
-version = "0.3.0"
+version = "0.3.1"
 description = "Mozhi · மொழி — open-source, on-device Tamil voice typing"
 authors = ["Mozhi contributors"]
 license = "Apache-2.0"

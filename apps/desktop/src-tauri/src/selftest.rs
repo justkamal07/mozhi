@@ -18,6 +18,9 @@ pub struct Args {
     pub wav: PathBuf,
     pub out: Option<PathBuf>,
     pub exit: bool,
+    /// Bundle id (macOS) of the app to type into; brought to the front before start and commit,
+    /// so the test never pastes into whatever happened to be frontmost.
+    pub app: Option<String>,
 }
 
 pub fn parse_args() -> Option<Args> {
@@ -25,7 +28,8 @@ pub fn parse_args() -> Option<Args> {
     let at = args.iter().position(|a| a == "--selftest")?;
     let wav = PathBuf::from(args.get(at + 1)?);
     let out = args.iter().position(|a| a == "--selftest-out").and_then(|i| args.get(i + 1)).map(PathBuf::from);
-    Some(Args { wav, out, exit: args.iter().any(|a| a == "--selftest-exit") })
+    let app = args.iter().position(|a| a == "--selftest-app").and_then(|i| args.get(i + 1)).cloned();
+    Some(Args { wav, out, exit: args.iter().any(|a| a == "--selftest-exit"), app })
 }
 
 #[derive(Serialize)]
@@ -43,7 +47,7 @@ struct Report {
 
 pub fn spawn(ctrl: Arc<Controller>, args: Args) {
     thread::spawn(move || {
-        let report = run(&ctrl, &args.wav);
+        let report = run(&ctrl, &args.wav, args.app.as_deref());
         let json = serde_json::to_string_pretty(&report).unwrap_or_default();
         log::info!("selftest: {json}");
         if let Some(out) = &args.out {
@@ -51,12 +55,23 @@ pub fn spawn(ctrl: Arc<Controller>, args: Args) {
         }
         if args.exit {
             thread::sleep(Duration::from_millis(400));
+            ctrl.engine.unload();
             ctrl.app_handle().exit(if report.ok { 0 } else { 1 });
         }
     });
 }
 
-fn run(ctrl: &Arc<Controller>, wav: &Path) -> Report {
+fn bring_to_front(app: Option<&str>) {
+    #[cfg(target_os = "macos")]
+    if let Some(id) = app {
+        let _ = std::process::Command::new("open").args(["-b", id]).status();
+        thread::sleep(Duration::from_millis(500));
+    }
+    #[cfg(not(target_os = "macos"))]
+    let _ = app;
+}
+
+fn run(ctrl: &Arc<Controller>, wav: &Path, app: Option<&str>) -> Report {
     let fail = |e: String| Report { ok: false, phase: ctrl.phase(), text: None, inserted: None, app_name: None, audio_ms: 0, total_ms: 0, error: Some(e) };
     let (samples, rate) = match read_wav(wav) {
         Ok(v) => v,
@@ -66,9 +81,14 @@ fn run(ctrl: &Arc<Controller>, wav: &Path) -> Report {
     // Let the model preload settle so the run measures dictation, not first load.
     thread::sleep(Duration::from_millis(2500));
     let before = ctrl.history.list().first().map(|h| h.id.clone());
+    // Never type into whatever the person happens to be using: with an app given, paste only
+    // into that app; without one, only copy.
+    *ctrl.paste_only_into.lock() = Some(app.unwrap_or("").to_string());
+    bring_to_front(app);
     let t = Instant::now();
     ctrl.start_with_samples(samples, rate);
     thread::sleep(Duration::from_millis(audio_ms + 900));
+    bring_to_front(app);
     ctrl.commit();
 
     let deadline = Instant::now() + Duration::from_secs(60);

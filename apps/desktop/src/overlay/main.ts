@@ -50,6 +50,8 @@ let liveEditing = false;
 /** An IME (Tamil99, phonetic…) is mid-composition: phrases wait so they don't break it. */
 let composing = false;
 const queued: SegmentPayload[] = [];
+/** Phrases applied this dictation (matches the controller's `rev`); null until the first sync. */
+let appliedRev: number | null = null;
 
 const stage = h("div", { class: "stage" });
 const voice = new Voice({ height: 30, onLevel: (l) => stage.style.setProperty("--lvl", l.toFixed(3)) });
@@ -289,6 +291,7 @@ function renderPhase(next: Phase, message?: string | null, actions: ErrorAction[
     queued.length = 0;
     textEl.value = "";
     caret = 0;
+    appliedRev = 0;
     fitText();
     chime("start");
   }
@@ -344,10 +347,19 @@ function stopLiveEdit() {
 
 /** A committed phrase: splice it in at the caret and report the new draft. */
 function applySegment(p: SegmentPayload) {
-  if (composing) {
-    queued.push(p);
+  if (composing || appliedRev === null) {
+    queued.push(p); // mid-IME, or not synced with the controller yet
     return;
   }
+  if (p.rev <= appliedRev) return; // already in the synced draft
+  if (p.rev !== appliedRev + 1) {
+    // Missed a phrase: take the controller's draft, which has every phrase including this one.
+    resync().then(() => {
+      if (p.last) api.finalDraft(textEl.value, appliedRev ?? undefined);
+    });
+    return;
+  }
+  appliedRev = p.rev;
   const at = currentCaret();
   const r = splice(textEl.value, at, p.text);
   const atEnd = at >= textEl.value.length;
@@ -358,8 +370,8 @@ function applySegment(p: SegmentPayload) {
   fitText();
   if (atEnd) textEl.scrollTop = textEl.scrollHeight;
   renderLive();
-  if (p.last) api.finalDraft(textEl.value);
-  else api.updateDraft(textEl.value, caret, false).catch(() => {});
+  if (p.last) api.finalDraft(textEl.value, appliedRev);
+  else api.updateDraft(textEl.value, caret, false, appliedRev).catch(() => {});
 }
 
 function insertEmoji(e: string) {
@@ -369,7 +381,7 @@ function insertEmoji(e: string) {
   caret = r.caret;
   if (focused()) textEl.setSelectionRange(caret, caret);
   fitText();
-  api.updateDraft(textEl.value, caret, true).catch(() => {});
+  api.updateDraft(textEl.value, caret, true, appliedRev ?? undefined).catch(() => {});
 }
 
 function toggleEmoji(show = !picker.open) {
@@ -382,7 +394,7 @@ function toggleEmoji(show = !picker.open) {
 /** Send the draft immediately (before ⌃⌃/↵ so the controller has the latest words). */
 function flushDraft() {
   clearTimeout(draftTimer);
-  return api.updateDraft(textEl.value, textEl.selectionStart, true).catch(() => {});
+  return api.updateDraft(textEl.value, textEl.selectionStart, true, appliedRev ?? undefined).catch(() => {});
 }
 
 function insertNow() {
@@ -409,7 +421,7 @@ textEl.addEventListener("input", () => {
   fitText();
   renderLive();
   clearTimeout(draftTimer);
-  draftTimer = window.setTimeout(() => api.updateDraft(textEl.value, textEl.selectionStart, true).catch(() => {}), 40);
+  draftTimer = window.setTimeout(() => api.updateDraft(textEl.value, textEl.selectionStart, true, appliedRev ?? undefined).catch(() => {}), 40);
 });
 
 // Caret moves (arrows, clicks) decide where the next phrase lands.
@@ -418,7 +430,7 @@ const trackCaret = () => {
   caret = textEl.selectionStart;
   renderLive();
   clearTimeout(draftTimer);
-  draftTimer = window.setTimeout(() => api.updateDraft(textEl.value, caret, false).catch(() => {}), 60);
+  draftTimer = window.setTimeout(() => api.updateDraft(textEl.value, caret, false, appliedRev ?? undefined).catch(() => {}), 60);
 };
 textEl.addEventListener("keyup", trackCaret);
 textEl.addEventListener("mouseup", trackCaret);
@@ -515,15 +527,25 @@ function chime(kind: "start" | "done" | "error") {
 
 // ── wiring ───────────────────────────────────────────────────────────────────
 
+/** Adopt the controller's draft (first load, or after a missed phrase). */
+async function resync() {
+  const snap = await api.getOverlayState();
+  textEl.value = snap.draft;
+  caret = snap.caret;
+  appliedRev = snap.rev;
+  if (focused()) textEl.setSelectionRange(caret, caret);
+  fitText();
+  textEl.scrollTop = textEl.scrollHeight;
+  renderLive();
+  // Phrases that arrived meanwhile: apply the ones the snapshot doesn't already contain.
+  queued.splice(0).forEach(applySegment);
+  return snap;
+}
+
 async function init() {
   if (!inTauri) return demo();
-  const snap = await api.getOverlayState();
-  settings = snap.settings;
-  mode = snap.state.mode;
-  applyLang();
-  renderTarget(snap.target);
-  renderPhase(snap.state.phase);
-
+  // Listen first, then fetch state: nothing said while the overlay loads can slip between.
+  events.onSegment(applySegment);
   events.onState((p) => {
     mode = p.mode;
     renderMode();
@@ -534,7 +556,6 @@ async function init() {
     live = s;
     renderLive();
   });
-  events.onSegment(applySegment);
   events.onFinal(setDraft);
   events.onTarget(renderTarget);
   events.onSettings((s) => {
@@ -542,6 +563,14 @@ async function init() {
     mode = s.outputMode;
     applyLang();
   });
+
+  const snap = await api.getOverlayState();
+  settings = snap.settings;
+  mode = snap.state.mode;
+  applyLang();
+  renderTarget(snap.target);
+  renderPhase(snap.state.phase);
+  await resync();
 }
 
 /** Browser preview (`npm run dev` → /overlay.html): plays a dictation with live phrases.
@@ -552,6 +581,7 @@ function demo() {
   renderTarget({ app: { name: "Slack", id: "com.tinyspeck.slackmacgap", pid: 1, windowTitle: "#general", icon: null, isSelf: false }, element: { role: "textArea", label: "Message #general", editable: true } });
   const phrases = ["வணக்கம் எல்லாருக்கும், இன்னைக்கு meeting-க்கு கொஞ்சம் late ஆகும்.", "பத்து நிமிஷத்துல வந்துடுறேன் 🙏", "அதுக்குள்ள agenda-வ ஒரு தடவை பாத்துருங்க."];
   const frozen = new URLSearchParams(location.search).get("phase");
+  appliedRev = 0;
   let t0 = 0;
   const wobble = (now: number) => {
     t0 = now / 1000;
@@ -562,8 +592,8 @@ function demo() {
   if (frozen) {
     renderPhase("starting");
     renderPhase("listening");
-    applySegment({ text: phrases[0], last: false });
-    applySegment({ text: phrases[1], last: false });
+    applySegment({ text: phrases[0], last: false, rev: 1 });
+    applySegment({ text: phrases[1], last: false, rev: 2 });
     if (frozen === "editing") {
       textEl.readOnly = false;
       liveEditing = true;
@@ -598,7 +628,7 @@ function demo() {
         }, at + 500 + i * 380),
       );
       at += 500 + words.length * 380 + 600;
-      setTimeout(() => applySegment({ text: p, last: false }), at);
+      setTimeout(() => applySegment({ text: p, last: false, rev: n + 1 }), at);
       if (n === phrases.length - 1) at += 300;
     });
     setTimeout(() => renderPhase("transcribing"), at + 200);

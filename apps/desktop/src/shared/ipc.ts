@@ -93,6 +93,8 @@ export interface StatePayload {
 export interface SegmentPayload {
   text: string;
   last: boolean;
+  /** 1, 2, 3… per dictation; a gap means the overlay missed one and must resync. */
+  rev: number;
 }
 
 export interface TargetPayload {
@@ -125,6 +127,10 @@ export interface OverlaySnapshot {
   state: StatePayload;
   target: TargetPayload;
   settings: Settings;
+  /** The draft as the controller has it, so a (re)loading overlay starts in sync. */
+  draft: string;
+  caret: number;
+  rev: number;
 }
 
 export interface AppInfo {
@@ -151,8 +157,8 @@ export const api = {
   cancelDictation: () => invoke<void>("cancel_dictation"),
   /** Click into the transcript while listening: edit and keep listening (`false` = focus left). */
   editDictation: (on = true) => invoke<void>("edit_dictation", { on }),
-  updateDraft: (text: string, caret?: number, byUser = true) => invoke<void>("update_draft", { text, caret, byUser }),
-  finalDraft: (text: string) => invoke<void>("final_draft", { text }),
+  updateDraft: (text: string, caret?: number, byUser = true, rev?: number) => invoke<void>("update_draft", { text, caret, byUser, rev }),
+  finalDraft: (text: string, rev?: number) => invoke<void>("final_draft", { text, rev }),
   insertDraft: (text: string) => invoke<void>("insert_draft", { text }),
   retryDictation: () => invoke<void>("retry_dictation"),
   copyDictation: () => invoke<void>("copy_dictation"),

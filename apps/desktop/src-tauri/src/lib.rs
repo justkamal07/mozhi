@@ -156,6 +156,13 @@ pub fn run() {
             commands::open_main_window,
             commands::app_info,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running Mozhi");
+        .build(tauri::generate_context!())
+        .expect("error while building Mozhi")
+        .run(|app, event| {
+            if let tauri::RunEvent::Exit = event {
+                if let Some(ctrl) = app.try_state::<Arc<Controller>>() {
+                    ctrl.engine.unload();
+                }
+            }
+        });
 }

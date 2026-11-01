@@ -365,6 +365,13 @@ impl Engine {
 
     // ── internals ──────────────────────────────────────────────────────────
 
+    /// Frees the loaded model and any recording. Call before the process exits: whisper.cpp's
+    /// Metal backend aborts in its static destructors while a context is still alive.
+    pub fn unload(&self) {
+        self.cancel_now();
+        *self.inner.model.lock() = None;
+    }
+
     fn cancel_now(&self) {
         if let Some(session) = self.inner.session.lock().take() {
             teardown(session);

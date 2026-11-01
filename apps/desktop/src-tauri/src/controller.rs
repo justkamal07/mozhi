@@ -61,6 +61,8 @@ struct Inner {
     /// while editing). `caret` is a UTF-16 offset, like a textarea's.
     draft: String,
     caret: usize,
+    /// Phrases spliced into the draft this dictation (see `SegmentPayload::rev`).
+    rev: u32,
     /// The user typed into the draft — skip LLM polish so it never rewrites their edits.
     user_edited: bool,
     /// The overlay holds keyboard focus while still listening.
@@ -97,6 +99,8 @@ pub struct Controller {
     pub capture: Arc<AtomicBool>,
     session: AtomicU64,
     inner: Mutex<Inner>,
+    /// Self-test guard: paste only into the app with this id; anything else is copied instead.
+    pub paste_only_into: Mutex<Option<String>>,
 }
 
 struct Sink {
@@ -140,6 +144,7 @@ impl Controller {
             settings,
             history,
             session: AtomicU64::new(0),
+            paste_only_into: Mutex::new(None),
             inner: Mutex::new(Inner {
                 phase: Phase::Idle,
                 target: None,
@@ -147,6 +152,7 @@ impl Controller {
                 mode: s.output_mode,
                 draft: String::new(),
                 caret: 0,
+                rev: 0,
                 user_edited: false,
                 live_edit: false,
                 focused: false,
@@ -261,6 +267,7 @@ impl Controller {
             i.mode = settings.output_mode;
             i.draft.clear();
             i.caret = 0;
+            i.rev = 0;
             i.user_edited = false;
             i.live_edit = false;
             i.final_reply = None;
@@ -346,20 +353,33 @@ impl Controller {
     /// into the real draft (its answer replaces the mirror).
     fn on_segment(&self, text: &str, last: bool) {
         let text = text.trim();
-        {
+        let rev = {
             let mut i = self.inner.lock();
             if !text.is_empty() {
                 let (d, c) = draft::splice(&i.draft, i.caret, text);
                 i.draft = d;
                 i.caret = c;
             }
-        }
-        let _ = self.app.emit_to(OVERLAY, EV_SEGMENT, SegmentPayload { text: text.to_string(), last });
+            i.rev += 1;
+            i.rev
+        };
+        let _ = self.app.emit_to(OVERLAY, EV_SEGMENT, SegmentPayload { text: text.to_string(), last, rev });
     }
 
-    /// The overlay reports the draft after every change, phrase or keystroke.
-    pub fn update_draft(&self, text: String, caret: Option<usize>, by_user: bool) {
+    /// The draft as the controller knows it: (text, caret, phrases applied).
+    pub fn draft_state(&self) -> (String, usize, u32) {
+        let i = self.inner.lock();
+        (i.draft.clone(), i.caret, i.rev)
+    }
+
+    /// The overlay reports the draft after every change, phrase or keystroke. A report from an
+    /// overlay that hasn't applied every phrase yet is stale (it would drop words): ignore it.
+    pub fn update_draft(&self, text: String, caret: Option<usize>, by_user: bool, rev: Option<u32>) {
         let mut i = self.inner.lock();
+        if rev.is_some_and(|r| r != i.rev) {
+            log::warn!("ignored a stale draft from the overlay (rev {rev:?}, expected {})", i.rev);
+            return;
+        }
         if matches!(i.phase, Phase::Starting | Phase::Listening | Phase::Transcribing | Phase::Editing) {
             i.caret = caret.unwrap_or_else(|| draft::utf16_len(&text));
             i.draft = text;
@@ -367,9 +387,15 @@ impl Controller {
         }
     }
 
-    /// The overlay's answer to the last segment: the complete draft to insert.
-    pub fn final_draft(&self, text: String) {
-        if let Some(tx) = self.inner.lock().final_reply.take() {
+    /// The overlay's answer to the last segment: the complete draft to insert. If it missed a
+    /// phrase, the controller's own copy (which has every phrase) is used instead.
+    pub fn final_draft(&self, text: String, rev: Option<u32>) {
+        let mut i = self.inner.lock();
+        let Some(tx) = i.final_reply.take() else { return };
+        if rev.is_some_and(|r| r != i.rev) {
+            log::warn!("overlay's final draft missed a phrase (rev {rev:?}, expected {}); using the controller's copy", i.rev);
+            let _ = tx.send(i.draft.clone());
+        } else {
             let _ = tx.send(text);
         }
     }
@@ -542,7 +568,11 @@ impl Controller {
         let settings = self.settings.get();
         let mode = self.inner.lock().mode;
         self.inner.lock().last_text = Some(text.clone());
-        let pasteable = settings.auto_paste && target.as_ref().map(|t| !t.is_self).unwrap_or(false);
+        let allowed = match self.paste_only_into.lock().as_deref() {
+            Some(id) => target.as_ref().map(|t| t.id == id).unwrap_or(false),
+            None => true,
+        };
+        let pasteable = allowed && settings.auto_paste && target.as_ref().map(|t| !t.is_self).unwrap_or(false);
 
         let mut actions = Vec::new();
         let (inserted, message) = if pasteable {

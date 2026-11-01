@@ -114,12 +114,17 @@ pub struct OverlaySnapshot {
     state: StatePayload,
     target: TargetPayload,
     settings: Settings,
+    /// The current draft, so a (re)loading overlay starts in sync.
+    draft: String,
+    caret: usize,
+    rev: u32,
 }
 
 #[tauri::command]
 pub fn get_overlay_state(ctrl: Ctrl) -> OverlaySnapshot {
     let (state, target) = ctrl.snapshot();
-    OverlaySnapshot { state, target, settings: ctrl.settings.get() }
+    let (draft, caret, rev) = ctrl.draft_state();
+    OverlaySnapshot { state, target, settings: ctrl.settings.get(), draft, caret, rev }
 }
 
 #[tauri::command]
@@ -145,14 +150,14 @@ pub fn edit_dictation(ctrl: Ctrl, on: Option<bool>) {
 }
 
 #[tauri::command]
-pub fn update_draft(ctrl: Ctrl, text: String, caret: Option<usize>, by_user: Option<bool>) {
-    ctrl.update_draft(text, caret, by_user.unwrap_or(true));
+pub fn update_draft(ctrl: Ctrl, text: String, caret: Option<usize>, by_user: Option<bool>, rev: Option<u32>) {
+    ctrl.update_draft(text, caret, by_user.unwrap_or(true), rev);
 }
 
 /// The overlay's complete draft once the last phrase is spliced in.
 #[tauri::command]
-pub fn final_draft(ctrl: Ctrl, text: String) {
-    ctrl.final_draft(text);
+pub fn final_draft(ctrl: Ctrl, text: String, rev: Option<u32>) {
+    ctrl.final_draft(text, rev);
 }
 
 #[tauri::command]

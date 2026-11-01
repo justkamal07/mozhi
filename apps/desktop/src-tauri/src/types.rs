@@ -268,6 +268,9 @@ pub struct StatePayload {
 pub struct SegmentPayload {
     pub text: String,
     pub last: bool,
+    /// 1, 2, 3… per dictation. The overlay applies phrases in order and resyncs from
+    /// `get_overlay_state` if it ever sees a gap (e.g. a phrase arrived before it was listening).
+    pub rev: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
