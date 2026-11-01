@@ -240,14 +240,12 @@ function runStoryDots(svg: SVGSVGElement) {
 
 // ── Download buttons: put the visitor's OS first ──
 function preferOs() {
-  const ua = navigator.userAgent;
-  const win = /Windows/i.test(ua);
-  if (!win) return; // Mac first by default; other platforms see both as they are
-  const mac = document.querySelector<HTMLElement>('.dl[data-os="mac"]');
-  const w = document.querySelector<HTMLElement>('.dl[data-os="win"]');
+  if (!/Windows/i.test(navigator.userAgent)) return; // Mac first by default
+  const mac = document.querySelector<HTMLElement>('.hero__cta [data-os="mac"]');
+  const w = document.querySelector<HTMLElement>('.hero__cta [data-os="win"]');
   if (!mac || !w) return;
-  mac.querySelector(".btn")?.classList.replace("btn--manjal", "btn--paper");
-  w.querySelector(".btn")?.classList.replace("btn--paper", "btn--manjal");
+  mac.classList.replace("btn--manjal", "btn--paper");
+  w.classList.replace("btn--paper", "btn--manjal");
   w.after(mac);
 }
 

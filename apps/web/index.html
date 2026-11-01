@@ -75,51 +75,42 @@
         <img class="hero__kolam" src="/art/kolam-hero.svg" width="439" height="439" alt="" />
         <div class="wrap hero__grid">
           <div class="hero__copy">
-            <p class="eyebrow">
-              <span lang="ta">திறந்த மூலம் · உங்கள் கணினியிலேயே</span>
-              <span>Open source · On-device · Free</span>
-            </p>
+            <a class="hero__new" href="#new">
+              <span class="hero__new-tag" lang="ta">புதிது</span>
+              <span>v%SITE.version%: edit while you speak, emoji in the pill</span>
+              <span aria-hidden="true">→</span>
+            </a>
             <h1 class="hero__title" id="hero-title">
               <span class="wordmark" lang="ta" aria-hidden="true">மொ<em>ழி</em></span>
               <span class="sr-only">Mozhi, மொழி</span>
             </h1>
             <p class="hero__meaning"><b>mozhi</b> <span>/mo·zhi/</span> <i>n.</i> Tamil for “language”, the spoken word.</p>
             <p class="hero__tag" lang="ta">பேசுங்க. எழுத்தாகும்.</p>
-            <p class="hero__tag-en">Speak Tamil. It types into any app, entirely on your computer.</p>
-            <p class="hero__lede" lang="ta">
-              Control-ஐ இரண்டு முறை தட்டுங்க, பேசுங்க. தமிழ், Tanglish, English, எப்படிப் பேசினாலும், நீங்க
-              இருக்கிற app-லயே எழுத்தா வந்து சேரும்.
-            </p>
-            <p class="gloss gloss--hero">
-              Double-tap Control and start talking. Tamil, Tanglish or English: however you speak, it arrives as text in the
-              app you're already in.
+            <p class="hero__lede" lang="ta">Control-ஐ இரண்டு முறை தட்டிப் பேசுங்க. நீங்க இருக்கிற <span class="nowrap">app-லயே</span> எழுத்தா வந்து சேரும்.</p>
+            <p class="hero__lede-en">
+              Speak Tamil, Tanglish or English. Double-tap Control and it types into the app you're in, entirely on your computer.
             </p>
             <div class="hero__cta">
-              <div class="dl" data-os="mac">
-                <a class="btn btn--manjal" href="%SITE.dlMac%" rel="noopener">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.5-1-2.5-3.6ZM14.1 5.6c.6-.8 1.1-1.8 1-2.9-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3Z"/></svg>
-                  <span><b lang="ta">macOS-க்கு</b> Download for Mac</span>
-                </a>
-                <p class="dl__meta"><b>v%SITE.version%</b> · Apple Silicon · macOS 12+ · .dmg</p>
-                <p class="dl__note"><span lang="ta">முதல் முறை:</span> right-click Mozhi in Applications → Open</p>
-              </div>
-              <div class="dl" data-os="win">
-                <a class="btn btn--paper" href="%SITE.dlWin%" rel="noopener">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M3 5.5 10.4 4.5v7H3v-6Zm0 13 7.4 1v-7H3v6Zm8.3 1.2L21 21v-8.5h-9.7v7.2Zm0-15.4v7.2H21V3l-9.7 1.3Z"/></svg>
-                  <span><b lang="ta">Windows-க்கு</b> Download for Windows</span>
-                </a>
-                <p class="dl__meta"><b>v%SITE.version%</b> · Windows 10/11 · 64-bit · <a href="%SITE.dlWinMsi%" rel="noopener">.msi</a></p>
-                <p class="dl__note"><span lang="ta">முதல் முறை:</span> SmartScreen → More info → Run anyway</p>
-              </div>
+              <a class="btn btn--manjal" href="%SITE.dlMac%" data-os="mac" rel="noopener">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.5-1-2.5-3.6ZM14.1 5.6c.6-.8 1.1-1.8 1-2.9-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3Z"/></svg>
+                <span><b lang="ta">macOS-க்கு</b> Download for Mac</span>
+              </a>
+              <a class="btn btn--paper" href="%SITE.dlWin%" data-os="win" rel="noopener">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M3 5.5 10.4 4.5v7H3v-6Zm0 13 7.4 1v-7H3v6Zm8.3 1.2L21 21v-8.5h-9.7v7.2Zm0-15.4v7.2H21V3l-9.7 1.3Z"/></svg>
+                <span><b lang="ta">Windows-க்கு</b> Download for Windows</span>
+              </a>
             </div>
-            <p class="hero__note">
-              <span lang="ta">புதிது v0.3: பேசும்போதே திருத்துங்கள்.</span> New in v0.3: edit while you speak, emoji in the pill, and errors that keep your words.
-              <a href="#new">See what's new →</a> · <a href="%SITE.releases%" rel="noopener">All releases</a>
+            <p class="hero__fine">
+              <b>v%SITE.version%</b> · Apple Silicon Macs, macOS 12+ · Windows 10/11 · also as
+              <a href="%SITE.dlWinMsi%" rel="noopener">.msi</a>
             </p>
-            <p class="hero__meta">
-              <a href="%SITE.repo%" rel="noopener">View source</a>
-              <span>Free · Apache-2.0 · <span lang="ta">இணையம் தேவையில்லை</span> / works offline</span>
-            </p>
+            <details class="hero__help">
+              <summary><span lang="ta">முதல் முறையா?</span> First time opening it?</summary>
+              <p>
+                <b>Mac:</b> right-click Mozhi in Applications → Open. <b>Windows:</b> if SmartScreen warns, click More info → Run anyway.
+                It's an unsigned beta, so your system asks once.
+              </p>
+            </details>
           </div>
 
           <div class="hero__demo">
