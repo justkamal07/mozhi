@@ -21,6 +21,6 @@ export default defineConfig({
     target: "es2020",
     cssMinify: true,
     assetsInlineLimit: 0,
-    rollupOptions: { input: { main: "index.html", notFound: "404.html" } },
+    rollupOptions: { input: { main: "index.html", guide: "guide.html", notFound: "404.html" } },
   },
 });

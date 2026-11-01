@@ -340,7 +340,7 @@ h3 small {
 .nav a:hover {
   background: var(--mz-kumkum-700);
 }
-@media (max-width: 960px) {
+@media (max-width: 1180px) {
   .nav {
     display: none;
   }
@@ -2097,7 +2097,7 @@ h3 small {
   background: var(--mz-kumkum-700);
   box-shadow: inset 0 -3px 0 var(--mz-manjal);
 }
-@media (max-width: 960px) {
+@media (max-width: 1180px) {
   .menu-btn {
     display: inline-flex;
     margin-left: auto;
@@ -2640,4 +2640,46 @@ blockquote {
 }
 .hero__help b {
   color: var(--mz-paper);
+}
+
+/* link to /guide from How it works */
+.guide-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-top: 40px;
+  padding: 18px 22px;
+  color: var(--mz-paper);
+  text-decoration: none;
+  background: var(--mz-mai);
+  border: 2px solid var(--mz-ink);
+  border-radius: var(--mz-r-lg);
+  box-shadow: 6px 6px 0 var(--mz-kumkum);
+  transition:
+    transform var(--mz-dur-fast) var(--mz-ease-out),
+    box-shadow var(--mz-dur-fast) var(--mz-ease-out);
+}
+.guide-link:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 8px 8px 0 var(--mz-kumkum);
+}
+.guide-link span {
+  font: 800 1.3rem/1.3 var(--mz-font-display);
+  color: var(--mz-manjal);
+}
+.guide-link b {
+  font-weight: 600;
+}
+.hero__help p a {
+  font-weight: 700;
+  color: var(--mz-manjal);
+}
+
+/* keep each nav label on one line */
+.nav a {
+  padding-inline: 8px;
+}
+.nav a span {
+  white-space: nowrap;
 }

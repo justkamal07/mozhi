@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>How to use Mozhi · மொழி வழிகாட்டி</title>
+    <meta
+      name="description"
+      content="A step-by-step guide to Mozhi, the open-source Tamil voice typing app: install, permissions, speaking, inserting, editing, emoji and settings."
+    />
+    <meta name="theme-color" content="#c3161c" />
+    <link rel="icon" href="/art/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="%SITE.url%/guide" />
+    <meta property="og:title" content="How to use Mozhi · மொழி வழிகாட்டி" />
+    <meta property="og:description" content="From install to your first sentence, in ten short steps." />
+    <meta property="og:image" content="%SITE.url%/og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" href="/fonts/AnekTamil-tamil.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body class="guide-page">
+    <a class="skip" href="#steps">Skip to the guide</a>
+
+    <header class="topbar" role="banner">
+      <div class="wrap topbar__in">
+        <a class="brand" href="/" aria-label="Mozhi home">
+          <img src="/art/mark.svg" width="34" height="34" alt="" />
+          <span class="brand__ta" lang="ta">மொழி</span>
+          <span class="brand__en">Mozhi</span>
+        </a>
+        <nav class="guide-nav" aria-label="Site">
+          <a href="/"><span lang="ta">முகப்பு</span> Home</a>
+          <a href="/#faq"><span lang="ta">கேள்விகள்</span> FAQ</a>
+        </nav>
+        <a class="btn btn--ghost btn--sm" href="%SITE.repo%" rel="noopener">GitHub</a>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="ghero red grain" aria-labelledby="g-title">
+        <img class="ghero__kolam" src="/art/kolam-hero.svg" width="439" height="439" alt="" />
+        <div class="wrap">
+          <p class="kicker"><span lang="ta">வழிகாட்டி</span> · Guide · v%SITE.version%</p>
+          <h1 id="g-title"><span lang="ta">மொழியை எப்படிப் பயன்படுத்துவது</span><small>How to use Mozhi</small></h1>
+          <p class="ghero__lede" lang="ta">நிறுவுவது முதல் முதல் வாக்கியம் வரை, பத்து சின்ன அடிகள்.</p>
+          <p class="ghero__lede-en">From install to your first sentence, in ten short steps. Each one plays as you scroll.</p>
+          <ol class="toc" role="list">
+            <li><a href="#install"><b>௧</b> <span lang="ta">நிறுவுங்கள்</span> Install</a></li>
+            <li><a href="#allow"><b>௨</b> <span lang="ta">அனுமதி</span> Permissions</a></li>
+            <li><a href="#model"><b>௩</b> <span lang="ta">பேச்சு மாதிரி</span> Model</a></li>
+            <li><a href="#speak"><b>௪</b> <span lang="ta">பேசுங்கள்</span> Speak</a></li>
+            <li><a href="#insert"><b>௫</b> <span lang="ta">சேர்த்திடுங்கள்</span> Insert</a></li>
+            <li><a href="#edit"><b>௬</b> <span lang="ta">திருத்துங்கள்</span> Edit</a></li>
+            <li><a href="#modes"><b>௭</b> <span lang="ta">எழுத்து முறை</span> Modes</a></li>
+            <li><a href="#emoji"><b>௮</b> <span lang="ta">எமோஜி</span> Emoji</a></li>
+            <li><a href="#errors"><b>௯</b> <span lang="ta">பிழை வந்தால்</span> Errors</a></li>
+            <li><a href="#settings"><b>௰</b> <span lang="ta">உங்களுக்கு ஏற்றபடி</span> Settings</a></li>
+          </ol>
+        </div>
+        <div class="band band--kodi" aria-hidden="true"></div>
+      </section>
+
+      <div class="steps-wrap paper" id="steps">
+        <!-- ௧ Install -->
+        <section class="chapter wrap" id="install" aria-labelledby="t-install">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௧</p>
+            <h2 id="t-install"><span lang="ta">நிறுவுங்கள்</span><small>Install Mozhi</small></h2>
+            <p class="chapter__ta" lang="ta">பதிவிறக்கி, Applications-க்கு இழுத்து விடுங்கள்.</p>
+            <p>
+              <b>Mac:</b> open the <code>.dmg</code> and drag Mozhi into Applications. The first time, right-click Mozhi →
+              <b>Open</b> → <b>Open</b>. It's an unsigned beta, so macOS asks once.
+            </p>
+            <p><b>Windows:</b> run the setup <code>.exe</code>. If SmartScreen warns, click <b>More info</b> → <b>Run anyway</b>.</p>
+            <p class="chapter__fine">Apple Silicon Mac with macOS 12+, or Windows 10/11 (64-bit).</p>
+            <div class="chapter__cta">
+              <a class="btn btn--manjal btn--sm" href="%SITE.dlMac%" rel="noopener">Download for Mac</a>
+              <a class="btn btn--paper btn--sm" href="%SITE.dlWin%" rel="noopener">Download for Windows</a>
+            </div>
+          </div>
+          <div class="scene" data-scene="install" aria-hidden="true">
+            <div class="stage">
+              <div class="dmg">
+                <div class="dmg__bar"><i></i><i></i><i></i><span>Mozhi</span></div>
+                <div class="dmg__body">
+                  <div class="dmg__app"><img src="/art/mark.svg" width="64" height="64" alt="" /><span>Mozhi</span></div>
+                  <div class="dmg__arrow">→</div>
+                  <div class="dmg__folder"><i class="folder"></i><span>Applications</span></div>
+                </div>
+              </div>
+              <i class="cursor"></i>
+              <p class="toast">Right-click → Open, the first time</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௨ Permissions -->
+        <section class="chapter chapter--flip wrap" id="allow" aria-labelledby="t-allow">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௨</p>
+            <h2 id="t-allow"><span lang="ta">அனுமதி கொடுங்கள்</span><small>Allow microphone and Accessibility</small></h2>
+            <p class="chapter__ta" lang="ta">கேட்க மைக்ரோஃபோன், ஒட்ட Accessibility.</p>
+            <p>
+              Mozhi asks for two things: the <b>microphone</b>, so it can hear you, and <b>Accessibility</b>, so it can notice
+              the double-tap and paste for you. Windows only needs the microphone.
+            </p>
+            <p>
+              It listens only while the pill is open, never records your typing, and nothing leaves your computer.
+            </p>
+            <p class="chapter__fine">
+              Updating on a Mac? Remove the old Mozhi under Privacy &amp; Security → Accessibility and add the new one.
+            </p>
+          </div>
+          <div class="scene" data-scene="allow" aria-hidden="true">
+            <div class="stage">
+              <div class="panel">
+                <p class="panel__title">Privacy &amp; Security</p>
+                <div class="perm perm--mic"><img src="/art/mark.svg" width="28" height="28" alt="" /><span><b>Microphone</b><small>Mozhi</small></span><i class="toggle"></i></div>
+                <div class="perm perm--ax"><img src="/art/mark.svg" width="28" height="28" alt="" /><span><b>Accessibility</b><small>Mozhi</small></span><i class="toggle"></i></div>
+              </div>
+              <p class="badge-ok">✓ Mozhi can listen and paste</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௩ Model -->
+        <section class="chapter wrap" id="model" aria-labelledby="t-model">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௩</p>
+            <h2 id="t-model"><span lang="ta">பேச்சு மாதிரியைப் பெறுங்கள்</span><small>Download a speech model</small></h2>
+            <p class="chapter__ta" lang="ta">ஒரு முறை பதிவிறக்குங்கள். பிறகு இணையம் தேவையில்லை.</p>
+            <p>
+              On first launch Mozhi offers the recommended model, <b>Tamil Small</b>, trained on Tamil by IIT Madras (about
+              265 MB). Download it once and Mozhi works offline from then on.
+            </p>
+            <p>
+              Speak lots of English, or heavy Tanglish? <b>Large v3 Turbo</b> keeps English words in English letters. Switch
+              any time under <b>Models</b>.
+            </p>
+          </div>
+          <div class="scene" data-scene="model" aria-hidden="true">
+            <div class="stage">
+              <div class="mcard">
+                <p class="mcard__year">IIT MADRAS · SPRING LAB</p>
+                <p class="mcard__name">Tamil Small</p>
+                <p class="mcard__size">≈ 265 MB</p>
+                <div class="mcard__bar"><i></i></div>
+                <p class="mcard__btn">Download</p>
+                <span class="mcard__seal" lang="ta">தயார்<small>Installed</small></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௪ Speak -->
+        <section class="chapter chapter--flip wrap" id="speak" aria-labelledby="t-speak">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௪</p>
+            <h2 id="t-speak"><span lang="ta">இருமுறை தட்டிப் பேசுங்கள்</span><small>Double-tap Control and speak</small></h2>
+            <p class="chapter__ta" lang="ta">எழுத வேண்டிய இடத்தில் கிளிக் செய்து, Control-ஐ இருமுறை தட்டுங்கள்.</p>
+            <p>
+              Click where you want to type, in any app. Double-tap <kbd>⌃</kbd> Control (<kbd>Ctrl</kbd> on Windows). The pill
+              rises at the bottom of your screen and names the app it will type into, so text never lands in the wrong
+              window.
+            </p>
+            <p>Then just talk: Tamil, Tanglish, English, or all three in one sentence. Your words appear as you speak.</p>
+          </div>
+          <div class="scene" data-scene="speak" aria-hidden="true">
+            <div class="stage">
+              <div class="win">
+                <div class="win__bar"><i></i><i></i><i></i><span>Notes</span></div>
+                <div class="win__body"><p class="win__line">Day 2</p><p class="win__caret"></p></div>
+              </div>
+              <kbd class="keycap">⌃</kbd>
+              <div class="gpill">
+                <p class="gpill__head"><i class="gpill__icon" style="background: #c4960f">N</i><small>TYPING INTO</small><b>Notes</b></p>
+                <p class="gpill__text" lang="ta"><span class="w w1">வணக்கம்</span> <span class="w w2">எல்லாருக்கும்,</span> <span class="w w3">இன்னைக்கு</span> <span class="w w4">meeting</span> <span class="w w5">இருக்கு.</span></p>
+                <p class="gpill__foot"><span class="bars"><i></i><i></i><i></i><i></i><i></i></span><span lang="ta">கேட்கிறேன்…</span></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௫ Insert -->
+        <section class="chapter wrap" id="insert" aria-labelledby="t-insert">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௫</p>
+            <h2 id="t-insert"><span lang="ta">சேர்த்திடுங்கள்</span><small>Insert it</small></h2>
+            <p class="chapter__ta" lang="ta">மீண்டும் இருமுறை தட்டுங்கள், அல்லது Enter.</p>
+            <p>
+              Double-tap Control again, or press <kbd>↵</kbd> Enter. Mozhi finishes the last few words, pastes the text where
+              your cursor was, and puts your old clipboard back.
+            </p>
+            <ul class="keys-list">
+              <li><kbd>⌃</kbd><kbd>⌃</kbd> or <kbd>↵</kbd> <span>insert</span></li>
+              <li><kbd>⇧</kbd><kbd>↵</kbd> <span>new line in the pill</span></li>
+              <li><kbd>esc</kbd> <span>cancel and throw the audio away</span></li>
+            </ul>
+          </div>
+          <div class="scene" data-scene="insert" aria-hidden="true">
+            <div class="stage">
+              <div class="win">
+                <div class="win__bar"><i></i><i></i><i></i><span>Notes</span></div>
+                <div class="win__body"><p class="win__line">Day 2</p><p class="win__typed" lang="ta">வணக்கம் எல்லாருக்கும், இன்னைக்கு meeting இருக்கு.</p></div>
+              </div>
+              <kbd class="keycap keycap--enter">↵</kbd>
+              <div class="gpill">
+                <p class="gpill__head"><i class="gpill__icon" style="background: #c4960f">N</i><small>TYPING INTO</small><b>Notes</b></p>
+                <p class="gpill__text" lang="ta">வணக்கம் எல்லாருக்கும், இன்னைக்கு meeting இருக்கு.</p>
+                <p class="gpill__foot"><span class="tri"><i></i><i></i><i></i></span><span class="st st--write" lang="ta">எழுதுகிறேன்…</span><span class="st st--done">✓ Inserted into Notes</span></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௬ Edit while speaking -->
+        <section class="chapter chapter--flip wrap" id="edit" aria-labelledby="t-edit">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௬</p>
+            <h2 id="t-edit"><span lang="ta">பேசும்போதே திருத்துங்கள்</span><small>Edit while you speak</small></h2>
+            <p class="chapter__ta" lang="ta">Cursor எங்கே இருக்கிறதோ, அங்கே அடுத்த சொற்கள் விழும்.</p>
+            <p>
+              Click into the text in the pill while Mozhi is still listening. Fix a name, add a line: every phrase you say next
+              goes in where your cursor is. The words it's still hearing show on a live line underneath.
+            </p>
+          </div>
+          <div class="scene" data-scene="edit" aria-hidden="true">
+            <div class="stage">
+              <div class="gpill gpill--solo">
+                <p class="gpill__head"><i class="gpill__icon" style="background: #4a154b">S</i><small>TYPING INTO</small><b>Slack</b></p>
+                <p class="gpill__text" lang="ta">நாளைக்கு <span class="ins">பத்து மணிக்கு </span><i class="caret"></i>meeting வெச்சுக்கலாம்.</p>
+                <p class="gpill__live"><i></i><span lang="ta">கேட்கிறேன்: பத்து மணிக்கு</span></p>
+                <p class="gpill__foot"><span class="bars"><i></i><i></i><i></i><i></i><i></i></span><span lang="ta">கேட்கிறேன்…</span></p>
+              </div>
+              <i class="cursor cursor--edit"></i>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௭ Modes -->
+        <section class="chapter wrap" id="modes" aria-labelledby="t-modes">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௭</p>
+            <h2 id="t-modes"><span lang="ta">எழுத்து முறையைத் தேர்ந்தெடுங்கள்</span><small>Choose how it writes</small></h2>
+            <p class="chapter__ta" lang="ta">ஒரே பேச்சு, நான்கு வடிவம்.</p>
+            <p>Click the chip in the pill, or pick from the menu-bar icon:</p>
+            <ul class="modes-list">
+              <li><b>Auto</b> picks Tamil or English for each sentence.</li>
+              <li><b lang="ta">தமிழ்</b> writes Tamil script.</li>
+              <li><b>Tanglish</b> writes Tamil in English letters.</li>
+              <li><b>English</b> writes English.</li>
+            </ul>
+          </div>
+          <div class="scene" data-scene="modes" aria-hidden="true">
+            <div class="stage">
+              <div class="gpill gpill--solo gpill--modes">
+                <p class="gpill__head"><i class="gpill__icon" style="background: #1f8f4e">W</i><small>TYPING INTO</small><b>WhatsApp</b>
+                  <span class="chip"><span class="m m0">Auto</span><span class="m m1" lang="ta">தமிழ்</span><span class="m m2">Tanglish</span><span class="m m3">English</span></span>
+                </p>
+                <div class="mode-out">
+                  <p class="m m0" lang="ta">நாளைக்கு meeting இருக்கு.</p>
+                  <p class="m m1" lang="ta">நாளைக்கு மீட்டிங் இருக்கு.</p>
+                  <p class="m m2">Naalaikku meeting irukku.</p>
+                  <p class="m m3">There's a meeting tomorrow.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௮ Emoji -->
+        <section class="chapter chapter--flip wrap" id="emoji" aria-labelledby="t-emoji">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௮</p>
+            <h2 id="t-emoji"><span lang="ta">எமோஜி சேருங்கள்</span><small>Add emoji</small></h2>
+            <p class="chapter__ta" lang="ta">தேடுங்கள், அல்லது சொல்லுங்கள்.</p>
+            <p>
+              Tap 😊 in the pill and search in English, Tamil or Tanglish: <i>heart</i>, <span lang="ta">இதயம்</span>,
+              <i>sirippu</i>, <i>sapadu</i>. Or just say it: “heart emoji”, “thumbs up emoji”, “<span lang="ta">இதயம் எமோஜி</span>”.
+            </p>
+            <p class="chapter__fine">Voice emoji can be turned off under Writing.</p>
+          </div>
+          <div class="scene" data-scene="emoji" aria-hidden="true">
+            <div class="stage">
+              <div class="gpill gpill--solo">
+                <p class="gpill__head"><i class="gpill__icon" style="background: #1f8f4e">W</i><small>TYPING INTO</small><b>WhatsApp</b><span class="smile">😊</span></p>
+                <p class="gpill__text" lang="ta">சூப்பர்! <span class="e e1">❤️</span> <span class="e e2">👍</span></p>
+                <p class="say">“thumbs up emoji”</p>
+              </div>
+              <div class="picker">
+                <p class="picker__search"><span lang="ta">இதயம்</span><i class="caret"></i></p>
+                <p class="picker__row"><span class="pick">❤️</span> 💛 🧡 💚 💙 💜</p>
+                <p class="picker__row picker__row--dim">🙏 😊 😂 👍 🔥 🎉 🪔 🍛</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௯ Errors -->
+        <section class="chapter wrap" id="errors" aria-labelledby="t-errors">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௯</p>
+            <h2 id="t-errors"><span lang="ta">பிழை வந்தால்</span><small>If something goes wrong</small></h2>
+            <p class="chapter__ta" lang="ta">உங்கள் பதிவு பத்திரமாக இருக்கும்.</p>
+            <p>
+              Mozhi keeps your recording. <b>Try again</b> transcribes it once more and lets you check before inserting.
+              <b>Copy text</b> keeps what you have. <b>Report</b> opens a GitHub issue with your version and the error; nothing
+              you dictated is included, and nothing is sent until you submit it.
+            </p>
+            <p class="chapter__fine">
+              No sound reaching Mozhi? Check the Microphone permission. Text not pasting? Check Accessibility.
+            </p>
+          </div>
+          <div class="scene" data-scene="errors" aria-hidden="true">
+            <div class="stage">
+              <div class="gpill gpill--solo gpill--err">
+                <p class="gpill__head"><i class="gpill__icon" style="background: #c4960f">N</i><small>TYPING INTO</small><b>Notes</b></p>
+                <p class="gpill__text"><span class="err-msg">Couldn't transcribe. <em>Your recording is safe.</em></span><span class="ok-msg" lang="ta">வணக்கம் எல்லாருக்கும், இன்னைக்கு meeting இருக்கு.</span></p>
+                <p class="gpill__btns"><span class="b-try">Try again</span><span>Copy text</span><span>Report</span></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ௰ Settings -->
+        <section class="chapter chapter--flip wrap" id="settings" aria-labelledby="t-settings">
+          <div class="chapter__text">
+            <p class="chapter__num" aria-hidden="true">௰</p>
+            <h2 id="t-settings"><span lang="ta">உங்களுக்கு ஏற்றபடி</span><small>Make it yours</small></h2>
+            <p class="chapter__ta" lang="ta">மெனு bar-இல் உள்ள ஃ ஐகானிலிருந்து Mozhi-ஐத் திறங்கள்.</p>
+            <ul class="settings-list">
+              <li><b>Shortcut</b>: another key (right Control, Option or Fn), the gap between taps, and “pause to edit before inserting”.</li>
+              <li><b>Writing</b>: live preview, voice emoji, restoring your clipboard, and optional local AI polish through Ollama.</li>
+              <li><b>History</b>: everything you dictated, kept on your computer. Turn it off any time.</li>
+              <li><b>Home</b>: open Mozhi when you log in, so the double-tap is always ready.</li>
+            </ul>
+          </div>
+          <div class="scene" data-scene="settings" aria-hidden="true">
+            <div class="stage">
+              <div class="appwin">
+                <div class="appwin__side">
+                  <img src="/art/mark.svg" width="24" height="24" alt="" />
+                  <p class="nav nav-home" lang="ta">முகப்பு</p>
+                  <p class="nav nav-models" lang="ta">மாதிரிகள்</p>
+                  <p class="nav nav-writing" lang="ta">எழுத்து</p>
+                  <p class="nav nav-shortcut" lang="ta">விசை</p>
+                  <p class="nav nav-history" lang="ta">வரலாறு</p>
+                </div>
+                <div class="appwin__main">
+                  <div class="pane pane-shortcut"><b>Double-tap key</b><p class="row"><kbd>⌃</kbd> Control <i class="tg on"></i></p><p class="row">Gap between taps <i class="slider"></i></p></div>
+                  <div class="pane pane-writing"><b>Writing</b><p class="row">Show text while I speak <i class="tg on"></i></p><p class="row">Voice emoji <i class="tg on"></i></p><p class="row">Local AI polish <i class="tg"></i></p></div>
+                  <div class="pane pane-history"><b>History</b><p class="rcpt" lang="ta">வணக்கம் எல்லாருக்கும்…</p><p class="rcpt">Naalaikku meeting…</p></div>
+                  <div class="pane pane-home"><b>Home</b><p class="row">Open Mozhi when you log in <i class="tg on"></i></p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Keys at a glance -->
+      <section class="glance ink" aria-labelledby="t-glance">
+        <div class="wrap glance__grid">
+          <div>
+            <p class="kicker">Cheat sheet</p>
+            <h2 id="t-glance"><span lang="ta">விசைகள் ஒரே பார்வையில்</span><small>Keys at a glance</small></h2>
+            <p>Keep these four in mind and you know Mozhi. On Windows, read <kbd>Ctrl</kbd> for <kbd>⌃</kbd>.</p>
+            <div class="chapter__cta">
+              <a class="btn btn--manjal" href="%SITE.dlMac%" rel="noopener">Download for Mac</a>
+              <a class="btn btn--paper" href="%SITE.dlWin%" rel="noopener">Download for Windows</a>
+            </div>
+          </div>
+          <dl class="cheat">
+            <div><dt><kbd>⌃</kbd><kbd>⌃</kbd></dt><dd><span lang="ta">பேசத் தொடங்கு</span> Start listening</dd></div>
+            <div><dt><kbd>⌃</kbd><kbd>⌃</kbd> / <kbd>↵</kbd></dt><dd><span lang="ta">சேர்</span> Insert into the app you're in</dd></div>
+            <div><dt><kbd>⇧</kbd><kbd>↵</kbd></dt><dd><span lang="ta">புதிய வரி</span> New line in the pill</dd></div>
+            <div><dt><kbd>esc</kbd></dt><dd><span lang="ta">ரத்து</span> Cancel and discard</dd></div>
+          </dl>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot ink" role="contentinfo">
+      <div class="band band--kaavi" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="foot__row">
+          <a class="brand brand--light" href="/" aria-label="Mozhi home">
+            <img src="/art/mark.svg" width="30" height="30" alt="" />
+            <span class="brand__ta" lang="ta">மொழி</span>
+            <span class="brand__en">Mozhi</span>
+          </a>
+          <nav class="foot__links" aria-label="Project">
+            <a href="%SITE.repo%" rel="noopener">GitHub</a>
+            <a href="%SITE.releases%" rel="noopener"><span lang="ta">வெளியீடுகள்</span> Releases</a>
+            <a href="%SITE.issues%" rel="noopener"><span lang="ta">சிக்கலைத் தெரிவி</span> Report an issue</a>
+          </nav>
+        </div>
+        <p class="foot__small">Created by Kamalraaj Senthilkumar (<span lang="ta">சாலை மெய்யழகன்</span>), for Mother Tamil · Apache-2.0</p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/guide.ts"></script>
+  </body>
+</html>
