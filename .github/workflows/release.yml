@@ -104,11 +104,11 @@ jobs:
             ### First run
             Mozhi downloads a speech model the first time (about 265 MB for the recommended Tamil model). After that everything runs offline.
 
-            Found a problem? [Report it here](https://github.com/Kamal007OLica/mozhi/issues/new/choose).
+            Found a problem? [Report it here](https://github.com/justkamal07/mozhi/issues/new/choose).
 
   # Stable file names so the website can link straight to the newest installer:
-  #   https://github.com/Kamal007OLica/mozhi/releases/latest/download/Mozhi-macOS-AppleSilicon.dmg
-  #   https://github.com/Kamal007OLica/mozhi/releases/latest/download/Mozhi-Windows-x64-setup.exe
+  #   https://github.com/justkamal07/mozhi/releases/latest/download/Mozhi-macOS-AppleSilicon.dmg
+  #   https://github.com/justkamal07/mozhi/releases/latest/download/Mozhi-Windows-x64-setup.exe
   # Also replaces the generic body with docs/releases/<tag>.md when that file exists.
   finalize:
     name: Stable download names and notes

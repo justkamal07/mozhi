@@ -35,7 +35,7 @@ import {
 } from "../shared/ipc";
 
 const api = inTauri ? realApi : mock;
-const REPO_URL = "https://github.com/Kamal007OLica/mozhi";
+const REPO_URL = "https://github.com/justkamal07/mozhi";
 
 type Page = "home" | "models" | "writing" | "shortcut" | "history" | "permissions" | "about";
 const PAGES: { id: Page; key: Key }[] = [

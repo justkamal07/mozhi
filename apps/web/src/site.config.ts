@@ -1,8 +1,8 @@
 // The one place that knows where Mozhi lives on the internet.
-export const REPO_URL = "https://github.com/Kamal007OLica/mozhi";
+export const REPO_URL = "https://github.com/justkamal07/mozhi";
 // The release the download buttons describe. CI attaches stable-named installers to every
 // full release, so /releases/latest/download/<name> always serves the newest one.
-export const VERSION = "0.3.0";
+export const VERSION = "0.3.1";
 
 const LATEST = `${REPO_URL}/releases/latest/download`;
 

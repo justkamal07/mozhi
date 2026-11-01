@@ -767,7 +767,7 @@ impl Controller {
         } else {
             "Windows 11"
         };
-        let mut url = String::from("https://github.com/Kamal007OLica/mozhi/issues/new?template=bug_report.yml");
+        let mut url = String::from("https://github.com/justkamal07/mozhi/issues/new?template=bug_report.yml");
         for (k, v) in [("title", title.as_str()), ("what", what.as_str()), ("os", os_choice), ("version", version.as_str()), ("logs", logs.as_str())] {
             url.push('&');
             url.push_str(k);
