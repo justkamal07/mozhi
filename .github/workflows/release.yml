@@ -39,6 +39,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       GGML_NATIVE: "OFF"
+      # Code signing switches on by itself once its repository secrets exist (docs/SIGNING.md).
+      # Without them the build still succeeds, unsigned.
+      HAS_APPLE_CERT: ${{ secrets.APPLE_CERTIFICATE != '' }}
+      HAS_APPLE_NOTARY: ${{ secrets.APPLE_ID != '' }}
+      HAS_AZURE_SIGNING: ${{ secrets.AZURE_CLIENT_ID != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,13 +78,63 @@ jobs:
       - name: Install JavaScript dependencies
         run: npm ci
 
+      # macOS: sign with the Developer ID certificate, then notarise with Apple, so the app
+      # opens with a normal double-click. Tauri reads these variables itself.
+      - name: Apple signing and notarisation (when configured)
+        if: runner.os == 'macOS' && env.HAS_APPLE_CERT == 'true'
+        shell: bash
+        env:
+          CERT: ${{ secrets.APPLE_CERTIFICATE }}
+          CERT_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          NOTARY_ID: ${{ secrets.APPLE_ID }}
+          NOTARY_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          {
+            echo "APPLE_CERTIFICATE=$CERT"
+            echo "APPLE_CERTIFICATE_PASSWORD=$CERT_PASSWORD"
+            echo "APPLE_SIGNING_IDENTITY=$IDENTITY"
+          } >> "$GITHUB_ENV"
+          if [ "$HAS_APPLE_NOTARY" = "true" ]; then
+            {
+              echo "APPLE_ID=$NOTARY_ID"
+              echo "APPLE_PASSWORD=$NOTARY_PASSWORD"
+              echo "APPLE_TEAM_ID=$TEAM_ID"
+            } >> "$GITHUB_ENV"
+          else
+            echo "::warning::Signing the Mac app without notarisation; add APPLE_ID, APPLE_PASSWORD and APPLE_TEAM_ID."
+          fi
+
+      # Windows: sign the app and both installers through Azure Trusted Signing.
+      - name: Windows signing via Azure Trusted Signing (when configured)
+        if: runner.os == 'Windows' && env.HAS_AZURE_SIGNING == 'true'
+        shell: bash
+        env:
+          TENANT: ${{ secrets.AZURE_TENANT_ID }}
+          CLIENT: ${{ secrets.AZURE_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          PROFILE: ${{ secrets.AZURE_SIGNING_PROFILE }}
+        run: |
+          cargo install trusted-signing-cli --locked
+          {
+            echo "AZURE_TENANT_ID=$TENANT"
+            echo "AZURE_CLIENT_ID=$CLIENT"
+            echo "AZURE_CLIENT_SECRET=$CLIENT_SECRET"
+          } >> "$GITHUB_ENV"
+          printf '{"bundle":{"windows":{"signCommand":"trusted-signing-cli -e %s -a %s -c %s -d Mozhi %%1"}}}\n' \
+            "$ENDPOINT" "$ACCOUNT" "$PROFILE" > apps/desktop/src-tauri/tauri.signing.json
+          echo "SIGN_ARGS=--config src-tauri/tauri.signing.json" >> "$GITHUB_ENV"
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: apps/desktop
           tauriScript: npm run tauri
-          args: ${{ matrix.args }}
+          args: ${{ matrix.args }} ${{ env.SIGN_ARGS }}
           tagName: ${{ inputs.tag || github.ref_name }}
           releaseName: "Mozhi ${{ inputs.tag || github.ref_name }}"
           releaseDraft: false
