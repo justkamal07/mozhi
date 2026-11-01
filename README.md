@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Kamal007OLica/mozhi/releases"><img alt="Download the beta" src="https://img.shields.io/github/v/release/Kamal007OLica/mozhi?include_prereleases&label=download&style=for-the-badge&color=c3161c&labelColor=17110e"></a>
+  <a href="https://github.com/justkamal07/mozhi/releases"><img alt="Download the beta" src="https://img.shields.io/github/v/release/justkamal07/mozhi?include_prereleases&label=download&style=for-the-badge&color=c3161c&labelColor=17110e"></a>
   <img alt="macOS and Windows" src="https://img.shields.io/badge/macOS%20%C2%B7%20Windows-f4c430?style=for-the-badge&labelColor=17110e">
   <img alt="Runs on your device" src="https://img.shields.io/badge/100%25-on--device-2f7d4f?style=for-the-badge&labelColor=17110e">
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-efe4cf?style=for-the-badge&labelColor=17110e"></a>
@@ -13,10 +13,10 @@
 <h3 align="center">Double-tap <kbd>Control</kbd>. Speak தமிழ், Tanglish or English.<br>Your words land in the app you're already in.</h3>
 
 <p align="center">
-  <a href="https://github.com/Kamal007OLica/mozhi/releases"><b>⬇ Download for Mac or Windows</b></a>
+  <a href="https://github.com/justkamal07/mozhi/releases"><b>⬇ Download for Mac or Windows</b></a>
   &nbsp;·&nbsp; <a href="https://mozhi-khaki.vercel.app">Website</a>
   &nbsp;·&nbsp; <a href="#building-from-source">Build from source</a>
-  &nbsp;·&nbsp; <a href="https://github.com/Kamal007OLica/mozhi/issues/new/choose">Report an issue</a>
+  &nbsp;·&nbsp; <a href="https://github.com/justkamal07/mozhi/issues/new/choose">Report an issue</a>
 </p>
 
 <p align="center">
@@ -107,7 +107,7 @@ you drop in the models folder shows up too, including fine-tunes converted with
 
 ## Install
 
-Grab the latest build from [**Releases**](https://github.com/Kamal007OLica/mozhi/releases). These are unsigned beta builds.
+Grab the latest build from [**Releases**](https://github.com/justkamal07/mozhi/releases). These are unsigned beta builds.
 
 <details open>
 <summary><b>macOS</b> (Apple Silicon, macOS 12+)</summary>
@@ -181,7 +181,7 @@ with Tamil inscriptions.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Tamil speakers who can test accuracy across dialects (Chennai, Kongu,
 Madurai, Tirunelveli, Jaffna, Malaysian and Singaporean Tamil) are especially welcome. Use the
-[accuracy report](https://github.com/Kamal007OLica/mozhi/issues/new/choose) to tell us where Mozhi mishears you.
+[accuracy report](https://github.com/justkamal07/mozhi/issues/new/choose) to tell us where Mozhi mishears you.
 
 ## அன்னைத் தமிழுக்கு · Made with love
 
