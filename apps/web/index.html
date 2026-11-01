@@ -95,22 +95,30 @@
               app you're already in.
             </p>
             <div class="hero__cta">
-              <a class="btn btn--manjal" href="%SITE.releases%" data-os="mac" rel="noopener">
-                <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.5-1-2.5-3.6ZM14.1 5.6c.6-.8 1.1-1.8 1-2.9-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3Z"/></svg>
-                <span><b lang="ta">macOS-க்கு</b> Download for Mac</span>
-              </a>
-              <a class="btn btn--paper" href="%SITE.releases%" data-os="win" rel="noopener">
-                <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M3 5.5 10.4 4.5v7H3v-6Zm0 13 7.4 1v-7H3v6Zm8.3 1.2L21 21v-8.5h-9.7v7.2Zm0-15.4v7.2H21V3l-9.7 1.3Z"/></svg>
-                <span><b lang="ta">Windows-க்கு</b> Download for Windows</span>
-              </a>
+              <div class="dl" data-os="mac">
+                <a class="btn btn--manjal" href="%SITE.dlMac%" rel="noopener">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.5-1-2.5-3.6ZM14.1 5.6c.6-.8 1.1-1.8 1-2.9-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3Z"/></svg>
+                  <span><b lang="ta">macOS-க்கு</b> Download for Mac</span>
+                </a>
+                <p class="dl__meta"><b>v%SITE.version%</b> · Apple Silicon · macOS 12+ · .dmg</p>
+                <p class="dl__note"><span lang="ta">முதல் முறை:</span> right-click Mozhi in Applications → Open</p>
+              </div>
+              <div class="dl" data-os="win">
+                <a class="btn btn--paper" href="%SITE.dlWin%" rel="noopener">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M3 5.5 10.4 4.5v7H3v-6Zm0 13 7.4 1v-7H3v6Zm8.3 1.2L21 21v-8.5h-9.7v7.2Zm0-15.4v7.2H21V3l-9.7 1.3Z"/></svg>
+                  <span><b lang="ta">Windows-க்கு</b> Download for Windows</span>
+                </a>
+                <p class="dl__meta"><b>v%SITE.version%</b> · Windows 10/11 · 64-bit · <a href="%SITE.dlWinMsi%" rel="noopener">.msi</a></p>
+                <p class="dl__note"><span lang="ta">முதல் முறை:</span> SmartScreen → More info → Run anyway</p>
+              </div>
             </div>
             <p class="hero__note">
-              <span lang="ta">புதிய beta: இடுவதற்கு முன் திருத்துங்கள்.</span> v0.2 beta is out: edit before you insert, and IIT Madras's Tamil model by default. Unsigned test builds for Apple Silicon Macs and Windows.
-              <a href="%SITE.releases%" rel="noopener">Install notes →</a>
+              <span lang="ta">புதிது v0.3: பேசும்போதே திருத்துங்கள்.</span> New in v0.3: edit while you speak, emoji in the pill, and errors that keep your words.
+              <a href="#new">See what's new →</a> · <a href="%SITE.releases%" rel="noopener">All releases</a>
             </p>
             <p class="hero__meta">
               <a href="%SITE.repo%" rel="noopener">View source</a>
-              <span>v%SITE.version% · Apache-2.0 · macOS 12+ · Windows 10+ · <span lang="ta">இணையம் தேவையில்லை</span> / works offline</span>
+              <span>Free · Apache-2.0 · <span lang="ta">இணையம் தேவையில்லை</span> / works offline</span>
             </p>
           </div>
 
@@ -263,6 +271,69 @@
               </li>
             </ul>
           </nav>
+        </div>
+      </section>
+
+      <!-- ── New in v0.3 ─────────────────────────────────────── -->
+      <section class="whatsnew red grain" id="new" aria-labelledby="new-title">
+        <img class="whatsnew__kolam" src="/art/kolam-hero.svg" width="439" height="439" alt="" loading="lazy" />
+        <div class="wrap">
+          <header class="sec-head sec-head--light">
+            <p class="kicker"><span lang="ta">புதிது</span> · New in v%SITE.version%</p>
+            <h2 id="new-title"><span lang="ta">மூன்றாம் பதிப்பு. மூன்று புதுமைகள்.</span><small>Version three. Three new things.</small></h2>
+          </header>
+          <div class="features">
+            <article class="feature">
+              <div class="feature__art" aria-hidden="true">
+                <div class="mini">
+                  <div class="mini__head"><i class="mini__icon" style="background: #4a154b">S</i><b>Slack</b><span>#general</span></div>
+                  <p class="mini__text" lang="ta">நாளைக்கு <span class="mini__ins">பத்து மணிக்கு</span><i class="mini__caret"></i> meeting வெச்சுக்கலாம்.</p>
+                  <p class="mini__live"><i></i><span lang="ta">கேட்கிறேன்</span> listening…</p>
+                </div>
+              </div>
+              <h3><span lang="ta">பேசும்போதே திருத்துங்கள்</span><small>Edit while you speak</small></h3>
+              <p>
+                Click into the text while Mozhi is still listening. Fix a name, add a line: every phrase you say next goes in
+                where your cursor is. <kbd>↵</kbd> inserts, <kbd>⇧</kbd> <kbd>↵</kbd> adds a line, <kbd>esc</kbd> cancels.
+              </p>
+            </article>
+            <article class="feature">
+              <div class="feature__art" aria-hidden="true">
+                <div class="mini">
+                  <div class="mini__search"><b lang="ta">இதயம்</b><i class="mini__caret"></i></div>
+                  <div class="mini__emoji">❤️ 💛 🧡 💚 💙 💜 🤍 💕</div>
+                  <div class="mini__row">🙏 😊 😂 ❤️ 👍 🔥 🎉 🪔 🍛 ☕</div>
+                  <p class="mini__say">“<span lang="ta">இதயம் எமோஜி</span>” <b>→ ❤️</b></p>
+                </div>
+              </div>
+              <h3><span lang="ta">பேச்சிலேயே எமோஜி</span><small>Emoji, without leaving the pill</small></h3>
+              <p>
+                Tap 😊 for a picker and search in English, Tamil or Tanglish: <i>heart</i>, <span lang="ta">இதயம்</span>,
+                <i>sirippu</i>, <i>sapadu</i>, <i>vanakkam</i>. Or just say “heart emoji” or “<span lang="ta">இதயம் எமோஜி</span>”.
+              </p>
+            </article>
+            <article class="feature">
+              <div class="feature__art" aria-hidden="true">
+                <div class="mini mini--error">
+                  <div class="mini__head"><b class="mini__err">Couldn't transcribe</b></div>
+                  <p class="mini__text"><span lang="ta">உங்க பதிவு பத்திரமா இருக்கு.</span> <em>Your recording is safe.</em></p>
+                  <div class="mini__btns"><span class="mini__primary">Try again</span><span>Copy text</span><span>Report</span></div>
+                </div>
+              </div>
+              <h3><span lang="ta">பிழை வந்தாலும் சொற்கள் தொலையாது</span><small>Errors that keep your words</small></h3>
+              <p>
+                If a transcription fails, your recording is kept. <b>Try again</b> shows the result for you to check first,
+                <b>Copy text</b> saves what you have, and <b>Report</b> opens a GitHub issue with your version and the error,
+                never anything you dictated.
+              </p>
+            </article>
+          </div>
+          <p class="whatsnew__get">
+            <span lang="ta">இப்போதே பெறுங்கள்</span> Get v%SITE.version%:
+            <a href="%SITE.dlMac%" rel="noopener">Mac (.dmg)</a>
+            <a href="%SITE.dlWin%" rel="noopener">Windows (.exe)</a>
+            <a href="%SITE.releases%" rel="noopener">Release notes →</a>
+          </p>
         </div>
       </section>
 

@@ -42,8 +42,9 @@ const SCENES: Scene[] = [
     mode: "Tanglish",
     lang: "en",
     thread: [["Amma", "Eppo da varuva? 🙂", "en", "When are you coming, dear?"]],
-    words: ["Amma,", "naan", "Sunday", "kaalaila", "Chennai-ku", "varen.", "Ticket", "book", "pannitten."],
-    gloss: "Mum, I'm coming to Chennai on Sunday morning. I've booked the ticket.",
+    // Ends with a voice emoji: saying "heart emoji" writes ❤️ (new in v0.3).
+    words: ["Amma,", "naan", "Sunday", "kaalaila", "Chennai-ku", "varen.", "Ticket", "book", "pannitten.", "❤️"],
+    gloss: "Mum, I'm coming to Chennai on Sunday morning. I've booked the ticket. ❤️ (said “heart emoji”)",
   },
   {
     app: "Notes",
@@ -241,12 +242,12 @@ function runStoryDots(svg: SVGSVGElement) {
 function preferOs() {
   const ua = navigator.userAgent;
   const win = /Windows/i.test(ua);
-  if (!win) return;
-  const mac = document.querySelector<HTMLElement>('[data-os="mac"]');
-  const w = document.querySelector<HTMLElement>('[data-os="win"]');
+  if (!win) return; // Mac first by default; other platforms see both as they are
+  const mac = document.querySelector<HTMLElement>('.dl[data-os="mac"]');
+  const w = document.querySelector<HTMLElement>('.dl[data-os="win"]');
   if (!mac || !w) return;
-  mac.classList.replace("btn--manjal", "btn--paper");
-  w.classList.replace("btn--paper", "btn--manjal");
+  mac.querySelector(".btn")?.classList.replace("btn--manjal", "btn--paper");
+  w.querySelector(".btn")?.classList.replace("btn--paper", "btn--manjal");
   w.after(mac);
 }
 
@@ -303,12 +304,12 @@ function activeSection() {
 // ── Scroll reveal: content is visible without JS; this only adds the entrance ──
 function reveal() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const groups = [".sec-head", ".steps", ".callout", ".repo-links", ".said", ".mode-cards", ".privacy__copy", ".receipt", ".poster", ".tales", ".temple", ".stamps", ".oss__grid", ".portrait", ".maker__copy", ".qa", ".kural"];
+  const groups = [".sec-head", ".steps", ".callout", ".repo-links", ".features", ".said", ".mode-cards", ".privacy__copy", ".receipt", ".poster", ".tales", ".temple", ".stamps", ".oss__grid", ".portrait", ".maker__copy", ".qa", ".kural"];
   const targets: HTMLElement[] = [];
   for (const sel of groups) {
     document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
       // Lists reveal child by child; everything else as one block.
-      const kids = el.matches(".steps, .mode-cards, .tales, .stamps") ? [...el.children] : [el];
+      const kids = el.matches(".steps, .mode-cards, .tales, .stamps, .features") ? [...el.children] : [el];
       kids.forEach((k, i) => {
         const h = k as HTMLElement;
         h.classList.add("reveal");
